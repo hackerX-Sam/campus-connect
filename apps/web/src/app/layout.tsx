@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
-import { Manrope } from 'next/font/google';
+import localFont from 'next/font/local';
 import { AuthProvider } from '@/context/AuthContext';
 import { Footer, Navbar } from '@/components/Shell';
 import './globals.css';
 
-const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' });
+const manrope = localFont({
+  src: '../../../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2',
+  variable: '--font-manrope',
+  display: 'swap',
+  weight: '200 800',
+});
 
 export const metadata: Metadata = {
   title: { default: 'CampusConnect — Find your people', template: '%s | CampusConnect' },
