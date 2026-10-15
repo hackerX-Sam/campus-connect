@@ -1,0 +1,40 @@
+{
+  "name": "campusconnect",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "postinstall": "prisma generate --schema=prisma/schema.prisma",
+    "predev": "npm run build --workspace=packages/types",
+    "dev": "concurrently \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/web\"",
+    "prebuild": "npm run build --workspace=packages/types",
+    "build": "npm run build --workspace=apps/api && npm run build --workspace=apps/web",
+    "db:generate": "prisma generate --schema=prisma/schema.prisma",
+    "db:migrate": "prisma migrate deploy --schema=prisma/schema.prisma",
+    "db:migrate:dev": "prisma migrate dev --schema=prisma/schema.prisma",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio --schema=prisma/schema.prisma",
+    "lint": "npm run lint --workspace=apps/api && npm run lint --workspace=apps/web",
+    "pretest": "npm run build --workspace=packages/types",
+    "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
+    "pretype-check": "npm run build --workspace=packages/types",
+    "type-check": "npm run build --workspace=apps/api && npm run type-check --workspace=apps/web",
+    "docker:build": "docker compose build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3",
+    "prettier": "^3.2.5",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^8.71.2",
+    "@typescript-eslint/parser": "^8.71.2",
+    "prisma": "^5.10.2",
+    "tsx": "^4.7.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.2"
+  }
+}

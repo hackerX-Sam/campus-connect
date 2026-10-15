@@ -1,0 +1,447 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  BANNED
+}
+
+enum CommunityVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum CommunityStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum ProjectStatus {
+  IDEA
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum CollaborationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum NotificationType {
+  MEMBERSHIP_APPROVED
+  MEMBERSHIP_REJECTED
+  MEMBERSHIP_REQUEST
+  EVENT_REGISTERED
+  EVENT_UPDATED
+  EVENT_CANCELLED
+  PROJECT_INVITE
+  COLLABORATION_REQUEST
+  COLLABORATION_ACCEPTED
+  COLLABORATION_REJECTED
+  COMMUNITY_ANNOUNCEMENT
+  GENERAL
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+enum ResourceType {
+  ROOM
+  EQUIPMENT
+  SOFTWARE
+  OTHER
+}
+
+// ─────────────────────────────────────────────
+// MODELS
+// ─────────────────────────────────────────────
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String
+  role           UserRole @default(STUDENT)
+  emailVerified  Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  profile              UserProfile?
+  sessions             Session[]
+  communityMemberships CommunityMembership[]
+  ownedCommunities     Community[]           @relation("CommunityOwner")
+  eventRegistrations   EventRegistration[]
+  projectMemberships   ProjectMembership[]
+  ownedProjects        Project[]             @relation("ProjectOwner")
+  collaborationRequests CollaborationRequest[] @relation("RequesterCollabs")
+  sentRequests         CollaborationRequest[] @relation("SenderCollabs")
+  discussions          Discussion[]
+  comments             Comment[]
+  notifications        Notification[]
+  reports              Report[]              @relation("Reporter")
+  reportedContent      Report[]              @relation("Reported")
+  createdEvents        Event[]               @relation("EventCreator")
+  admin                Admin?
+  resources            Resource[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model UserProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  displayName  String
+  bio          String?
+  avatarUrl    String?
+  college      String?
+  course       String?
+  academicYear String?
+  skills       String[] @default([])
+  interests    String[] @default([])
+  githubUrl    String?
+  linkedinUrl  String?
+  websiteUrl   String?
+  isPublic     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Community {
+  id          String              @id @default(cuid())
+  slug        String              @unique
+  name        String
+  description String
+  category    String
+  logoUrl     String?
+  coverUrl    String?
+  objectives  String?
+  rules       String?
+  visibility  CommunityVisibility @default(PUBLIC)
+  status      CommunityStatus     @default(ACTIVE)
+  websiteUrl  String?
+  ownerId     String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  owner       User                  @relation("CommunityOwner", fields: [ownerId], references: [id])
+  memberships CommunityMembership[]
+  events      Event[]
+  projects    Project[]
+  discussions Discussion[]
+  resources   Resource[]
+  tags        Tag[]
+
+  @@index([slug])
+  @@index([category])
+  @@index([ownerId])
+  @@map("communities")
+}
+
+model CommunityMembership {
+  id          String           @id @default(cuid())
+  userId      String
+  communityId String
+  role        MembershipRole   @default(MEMBER)
+  status      MembershipStatus @default(PENDING)
+  joinedAt    DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, communityId])
+  @@index([communityId])
+  @@index([userId])
+  @@map("community_memberships")
+}
+
+model Event {
+  id           String      @id @default(cuid())
+  title        String
+  description  String
+  communityId  String?
+  creatorId    String
+  venue        String?
+  meetingLink  String?
+  startAt      DateTime
+  endAt        DateTime
+  maxCapacity  Int?
+  status       EventStatus @default(DRAFT)
+  coverUrl     String?
+  tags         String[]    @default([])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  community     Community?          @relation(fields: [communityId], references: [id])
+  creator       User                @relation("EventCreator", fields: [creatorId], references: [id])
+  registrations EventRegistration[]
+  tagRecords    Tag[]
+
+  @@index([communityId])
+  @@index([creatorId])
+  @@index([startAt])
+  @@map("events")
+}
+
+model EventRegistration {
+  id         String   @id @default(cuid())
+  eventId    String
+  userId     String
+  registeredAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@map("event_registrations")
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  objectives  String?
+  techStack   String[]      @default([])
+  category    String
+  status      ProjectStatus @default(IDEA)
+  ownerId     String
+  communityId String?
+  repoUrl     String?
+  demoUrl     String?
+  requiredSkills String[]   @default([])
+  maxTeamSize Int?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  owner        User                  @relation("ProjectOwner", fields: [ownerId], references: [id])
+  community    Community?            @relation(fields: [communityId], references: [id])
+  memberships  ProjectMembership[]
+  collaborations CollaborationRequest[]
+  tags           Tag[]
+
+  @@index([ownerId])
+  @@index([communityId])
+  @@index([status])
+  @@map("projects")
+}
+
+model ProjectMembership {
+  id        String         @id @default(cuid())
+  projectId String
+  userId    String
+  role      MembershipRole @default(MEMBER)
+  joinedAt  DateTime       @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@map("project_memberships")
+}
+
+model CollaborationRequest {
+  id        String              @id @default(cuid())
+  projectId String
+  senderId  String
+  requesterId String?
+  message   String?
+  status    CollaborationStatus @default(PENDING)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sender    User    @relation("SenderCollabs", fields: [senderId], references: [id])
+  requester User?   @relation("RequesterCollabs", fields: [requesterId], references: [id])
+
+  @@index([projectId])
+  @@index([senderId])
+  @@map("collaboration_requests")
+}
+
+model Discussion {
+  id          String   @id @default(cuid())
+  title       String
+  body        String
+  communityId String
+  authorId    String
+  isPinned    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+
+  @@index([communityId])
+  @@index([authorId])
+  @@map("discussions")
+}
+
+model Comment {
+  id           String   @id @default(cuid())
+  body         String
+  discussionId String
+  authorId     String
+  parentId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  discussion Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  author     User       @relation(fields: [authorId], references: [id])
+  parent     Comment?   @relation("CommentReplies", fields: [parentId], references: [id])
+  replies    Comment[]  @relation("CommentReplies")
+
+  @@index([discussionId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+model Admin {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  permissions String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admins")
+}
+
+model Tag {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  createdAt   DateTime    @default(now())
+  communities Community[]
+  events      Event[]
+  projects    Project[]
+
+  @@map("tags")
+}
+
+model Resource {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  type        ResourceType @default(OTHER)
+  location    String?
+  url         String?
+  capacity    Int?
+  isActive    Boolean      @default(true)
+  ownerId     String
+  communityId String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  owner     User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  community Community? @relation(fields: [communityId], references: [id], onDelete: SetNull)
+
+  @@index([type, isActive])
+  @@index([ownerId])
+  @@index([communityId])
+  @@map("resources")
+}
+
+model Report {
+  id             String       @id @default(cuid())
+  reporterId     String
+  reportedUserId String?
+  contentType    String
+  contentId      String
+  reason         String
+  details        String?
+  status         ReportStatus @default(PENDING)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  reporter     User  @relation("Reporter", fields: [reporterId], references: [id])
+  reportedUser User? @relation("Reported", fields: [reportedUserId], references: [id])
+
+  @@index([status])
+  @@index([reporterId])
+  @@map("reports")
+}

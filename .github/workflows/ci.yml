@@ -1,0 +1,33 @@
+name: CampusConnect CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npm run lint
+      - run: npm run type-check
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001/api
+      - run: npm test
+        env:
+          NODE_ENV: test
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001/api
+      - name: Build API container
+        run: docker build -f Dockerfile.api -t campusconnect-api:ci .
+      - name: Build web container
+        run: docker build -f Dockerfile.web --build-arg NEXT_PUBLIC_API_URL=http://localhost:3001/api -t campusconnect-web:ci .

@@ -1,0 +1,1973 @@
+--- Page 1 ---
+NSUT · Coding Club
+DTU · Design Society
+IIIT-D · Robotics
+JMI · E-Cell
+DU · Music
+94% collab match
+P R O B L E M  S T A T E M E N T  2  ·  P R O D U C T  &  A R C H I T E C T U R E  B L U E P R I N T
+CampusConnect
+Connect beyond campus.
+A verified, AI-assisted network where colleges, student communities and
+students discover each other, promote opportunities across campuses
+and run collaborations end-to-end, from finding the right partner to
+handing the relationship over to next year's team.
+12 product innovations
+ Event-driven, cloud-native
+ Built for 1M daily users
+ India-first · DPDP-aligned
+Web + iOS + Android
+Submitted by Team [Your Team Name]
+[College Name]
+Version 1.0
+October 2026
+
+--- Page 2 ---
+2CampusConnect · Product & Architecture Blueprint
+I N S I D E  T H I S  B LU E P R I N T
+Contents
+01 Executive summary
+02 The problem, examined in depth
+03 Solution: five pillars
+04 Twelve innovations
+05 Product design & key screens
+06 User journeys
+07 System architecture
+08 Services & technology stack
+09 Data architecture
+10 Event-driven backbone
+11 Real-time messaging
+12 Intelligence layer: matching, ranking, AI
+13 Search & feed
+14 Trust, safety, security & privacy
+15 Scalability engineering
+16 Deployment, reliability & DR
+17 Observability, DevOps & quality
+18 Client architecture (web + mobile)
+19 API design
+20 Go-to-market, business model & metrics
+21 Hackathon build plan, roadmap & risks
+22 Why CampusConnect wins
+At a glance
+4.3 Cr
+students in Indian higher education
+(AISHE 2021-22). Their communities are
+almost entirely disconnected from each
+other.
+45,000+
+colleges, each running dozens of clubs,
+fests and chapters inside a single campus.
+12
+original features covering discovery,
+promotion, collaboration and continuity.
+1M DAU
+design target for Year 3 across 3,000+
+colleges, sized and capacity-planned in
+§15.
+99.9%
+availability SLO, with p99 < 1 s message
+delivery and RPO under 1 minute.
+Day 1
+value for a single club with zero network:
+our answer to the cold-start problem.
+
+--- Page 3 ---
+3CampusConnect · Product & Architecture Blueprint
+0101
+E X E C U T I V E  S U M M A R Y
+An operating layer for inter-college student life
+CampusConnect turns thousands of isolated campus communities into one verified, searchable and
+collaborative network, and gives every community the tools to actually do something together once
+they've found each other.
+The problem (PS 2)
+Student communities operate in isolation. Finding
+relevant organizations at other colleges is hard.
+Promotion stops at the campus gate, inside single-
+campus WhatsApp groups. Collaborations depend on
+whoever has personal contacts this year.
+Our core insight
+Isolation isn't caused by a missing feed. Three systems
+are missing: (1) a way to find a complementary partner,
+(2) a low-friction way to plan and run things together,
+and (3) institutional memory that survives the annual
+leadership turnover. Generic social networks offer none
+of the three.
+The solution
+Five pillars (Discover · Connect · Promote ·
+Collaborate · Sustain) delivered through 12 features,
+including AI partner matching (Collab Compass),
+clash-aware scheduling (Date Doctor), poster-to-event
+publishing (Event Launchpad), shared co-host
+workspaces (Collab Rooms) and leadership-handover
+memory (Legacy Vault).
+Built to scale
+A modular monolith that grows into event-driven
+services. PostgreSQL is the source of truth, and search,
+feeds and analytics are rebuildable projections. It runs
+on AWS Mumbai with multi-AZ redundancy and a
+Hyderabad DR region. Capacity-planned for 1M DAU
+and spike-safe for fest registration rushes.
+How we beat the cold start. A social network is useless with no users, but CampusConnect isn't only a social
+network. A single club gets value on day 1: it publishes events from a poster in 30 seconds, syndicates them to
+WhatsApp and Instagram, checks dates against public calendars and keeps its Legacy Vault. Each of those actions
+adds a node to the network, and every shared link and collab request invites the next one.
+What judges should remember
+Complete PS coverage
+Every sentence of PS 2 maps to a named
+feature and a metric (§03).
+Novel, not a clone
+Complementarity matching, clash
+detection, resource exchange and
+leadership-handover memory don't exist
+together in any student platform we
+know of.
+Production-grade engineering
+Outbox pattern, CDC, cell-based scale
+path, SLOs, DR, DPDP compliance, all
+specified in detail.
+India-first
+WhatsApp-first distribution, Hindi +
+regional languages, Lite mode for low-
+end phones, data stored in India.
+Institution value
+College HQ gives approvals, safety
+oversight and collaboration records
+useful for accreditation documentation.
+A business
+Free for students. Revenue from College
+HQ licences, a Sponsor Pool, community
+Pro plans and ticketing fees.
+
+--- Page 4 ---
+4CampusConnect · Product & Architecture Blueprint
+0202
+T H E  P R O B L E M ,  E X A M I N E D  I N  D E P T H
+Why campus communities stay islands
+We broke PS 2 into its four stated failures, then went one level deeper to find the root causes a generic
+platform would miss.
+PAIN (FROM PS 2) WHAT HAPPENS TODAY ROOT CAUSE CAMPUSCONNECT ANSWER
+Operating in
+isolation
+Clubs know peers at other colleges
+only through seniors' personal
+contacts.
+No shared, persistent graph
+across campuses.
+Constellation graph, verified
+directory, cross-campus channels.
+Discovering
+relevant
+organizations
+Searching Instagram handles;
+asking around on WhatsApp.
+Community data is
+unstructured and
+unsearchable.
+Semantic + geo discovery, Campus
+Pulse map, Ask CampusConnect.
+Promoting events Posters forwarded inside own-
+campus groups; reach stops at the
+gate.
+Distribution is siloed with no
+audience targeting.
+Event Launchpad, reach targeting,
+Syndication Bridge, Smart Digest.
+Establishing
+collaborations
+Cold DMs go unanswered; co-
+hosting is coordinated in chaotic
+group chats.
+No matching, no trust signals,
+no shared workspace.
+Collab Compass, Collab Credits,
+Collab Rooms, Resource Exchange.
+Hidden problems we uncovered
+Annual leadership churn
+Office-bearers change every academic
+year. Sponsor contacts, partner
+relationships and playbooks leave with
+them. → Legacy Vault
+Calendar collisions
+Nearby colleges schedule fests and
+hackathons on the same weekend and
+split the audience, and exam weeks kill
+turnout. → Date Doctor
+Resource asymmetry
+One campus has a 500-seat auditorium,
+another has 300 developers, a third has
+industry judges. → Resource Exchange
+Trust deficit
+"Is this club real? Will they deliver?"
+There's no reputation that travels across
+campuses. → Verification tiers + Collab
+Credits
+Institutional blind spot
+Colleges can't see, approve or report
+what their communities do across
+campuses. → College HQ
+Wrong channel
+Students live on WhatsApp and
+Instagram and won't check yet another
+app daily. → Syndication Bridge +
+WhatsApp digests
+Who we build for
+Student
+Aarav, 2nd-year B.Tech
+"I want robotics clubs and
+events beyond my campus,
+and I need to know they're
+legit."
+Needs: interest + distance
+discovery, trust, one-tap
+registration.
+Community lead
+Priya, coding club
+president
+"We need judges, a 400-seat
+venue and a design partner
+for our hackathon."
+Needs: partners, reach
+beyond campus,
+coordination, sponsors.
+College
+Dr. Mehta, Dean of
+Student Affairs
+"I approve 60 events a year
+and can't track any of them
+afterwards."
+Needs: approvals, safety,
+visibility, reports.
+Sponsor
+Rohan, startup
+community manager
+"I want to reach 20 colleges'
+developer clubs without
+sending 20 cold emails."
+Needs: targeted reach,
+measurable outcomes.
+
+--- Page 5 ---
+5CampusConnect · Product & Architecture Blueprint
+0303
+S O LU T I O N
+Five pillars, one verified graph
+Each pillar answers one verb from the problem statement. Together they turn "we found each other" into
+"we did something together, and next year's team can repeat it".
+Verified Community Graph · colleges · communities · people · events · collaborations · trust
+Discover
+Constellation graph
+Campus Pulse map
+Semantic + geo search
+Ask CampusConnect
+"find relevant orgs"
+Connect
+Verified profiles
+Follows & feed
+DMs · channels
+College HQ
+"colleges connect"
+Promote
+Event Launchpad (AI)
+Date Doctor
+Syndication Bridge
+Smart Digest
+"promote events"
+Collaborate
+Collab Compass
+Collab Rooms
+Resource Exchange
+Opportunity Board
+"establish collaborations"
+Sustain
+Legacy Vault
+Collab Credits
+Campus Passport
+Sponsor Pool
+"keep it going"
+Figure 1 · Product pillars on top of a single verified graph.
+Problem-statement coverage matrix
+PS 2 REQUIREMENT CAMPUSCONNECT CAPABILITY PROOF METRIC
+"Communities operate in
+isolation"
+Constellation graph, cross-campus channels, proactive
+Collab Compass suggestions
+% of communities with ≥ 1 cross-
+campus connection
+"Difficult to discover
+relevant organizations"
+Hybrid semantic + geo search, Campus Pulse map, Ask
+CampusConnect, interest onboarding
+Search → follow conversion; time-to-
+first-follow
+"Promote events" Event Launchpad, campus/city/national reach targeting,
+Syndication Bridge, Smart Digest, Date Doctor
+Share of registrations from other
+colleges
+"Establish collaborations" Collab Compass, structured collab requests, Collab Rooms
++ Charter, Resource Exchange, Collab Credits
+North Star: cross-campus
+collaborations completed / month
+"Enables colleges … to
+connect"
+College HQ, institution verification, collaboration & MoU
+registry, approvals
+Colleges with an active HQ; approvals
+SLA
+"Promote opportunities
+across campuses"
+Opportunity Board (judges, speakers, volunteers,
+internships), targeted reach, Campus Passport
+Applications per opportunity; fill rate
+Design principle: "Bharat-first". English + Hindi at launch, then Tamil, Telugu, Bengali and Marathi. A Lite mode for
+3G and entry-level Android phones. WhatsApp-first notifications, and every public page readable without logging in.
+Accessibility to WCAG 2.2 AA.
+
+--- Page 6 ---
+6CampusConnect · Product & Architecture Blueprint
+0404
+T W E LV E  I N N O VAT I O N S
+Features that don't exist anywhere else
+Each one targets a root cause from §02 and has a concrete implementation path, so none of it is hand-
+waving.
+Collab Compass
+AI partner matching built on complementarity, not
+similarity.
+PROBLEMPartners are found through personal contacts, and
+cold DMs go unanswered.
+HOWEvery community has a skills profile (what it's good at)
+and a goals profile (what it wants to do this term). Compass
+recommends partners whose skills complement yours, whose
+goals overlap, who are nearby and who are trusted, and it
+shows why: "They bring UI/UX and branding; you bring ML.
+Both plan a November hackathon. 6 km apart."
+pgvector embeddings · explainable match score (§12) · weights
+learned from completed collaborations
+01 Date Doctor
+Scheduling that knows what clashes with your event.
+PROBLEMNearby colleges schedule big events on the same
+weekend and split the audience.
+HOWWhen picking a date, organizers see a heat strip of
+overlapping events for the same audience within a radius,
+plus known exam windows and festivals. They get the three
+best slots, each with a reason.
+PostGIS radius × audience-overlap (interest embeddings) ·
+academic calendars from College HQ · per-day clash score
+02
+Event Launchpad
+From poster to live event in 30 seconds.
+PROBLEMClubs already make a poster. Retyping details into
+every platform is what kills promotion.
+HOWDrop a poster, Instagram link or WhatsApp text. AI
+extracts the title, date, venue, fee, eligibility and registration
+link, and highlights low-confidence fields for confirmation.
+Publishing auto-generates an OG card, a QR code and
+bilingual descriptions.
+multimodal LLM with JSON-schema output · per-field confidence ·
+geocoding · human-in-the-loop confirmation
+03 Syndication Bridge
+Reach students where they already are.
+PROBLEMIndian students live on WhatsApp and Instagram,
+not on yet another app.
+HOWPublish once, then push to WhatsApp Channels,
+Instagram, LinkedIn and email digests. Every share carries a
+tracked short link, so organizers see which college and
+channel drove registrations.
+WhatsApp Cloud API + Meta Graph connectors · short-link service
+· attribution in ClickHouse
+04
+Collab Room + Charter
+A shared workspace the moment two clubs say yes.
+PROBLEMCo-hosting runs in chaotic group chats, and
+responsibilities and money get lost.
+HOWAccepting a collab request auto-creates a room with a
+task board, cross-org roles, a budget-split ledger, files and a
+joint registration page. It also produces a one-page COLLAB
+CHARTER (who does what, logo placement, revenue split)
+that both sides approve.
+real-time sync over WebSockets · charter rendered to PDF and
+stored as a signed, versioned record
+05 Resource Exchange
+Share what you have, borrow what you lack.
+PROBLEMResource asymmetry: one campus has an
+auditorium, another has developers, judges or 3D printers.
+HOWCommunities list lendable venues, equipment and
+people (judges, speakers, mentors, volunteers) with
+availability. Others request bookings, and completed
+exchanges earn Collab Credits.
+Postgres tstzrange slots + an EXCLUDE constraint, so double-
+booking is impossible at the database level
+06
+
+--- Page 7 ---
+7CampusConnect · Product & Architecture Blueprint
+Bonus: Smart Digest. A weekly, personalized "what's worth your weekend" digest delivered on WhatsApp or email,
+ranked by the same engine as the feed. It brings students back without asking them to open the app every day.
+Collab Credits & Trust Score
+A reputation that travels across campuses.
+PROBLEM"Will this club actually deliver?"
+HOWAfter each collaboration, both sides leave a structured
+review (delivery, communication, turnout). Combined with
+the verification tier and history, this produces a Trust Score
+on the profile. Credits earned by helping others unlock
+featured placement in Discover.
+Bayesian-average ratings (no small-sample bias) · decay across
+terms · graph anomaly detection against review rings
+07 Legacy Vault
+Club memory that survives graduation.
+PROBLEMEvery year the entire leadership graduates, and
+contacts, playbooks and partner relationships go with them.
+HOWA structured handover: a role-succession workflow, a
+vault of documents, a partner/sponsor CRM and past-event
+playbooks. New leads can ask "ASK THE VAULT" things like
+"How did we book the auditorium last year?" and get
+answers with citations.
+RAG over vault docs (pgvector + LLM) · term column on
+memberships · permission transfer on approved succession
+08
+Campus Pulse
+The city's student life, live on a map.
+PROBLEMStudents can't see what's happening around them
+across campuses.
+HOWA map and heat layer of events, open calls and active
+communities in a chosen radius and time window ("this
+weekend, within 8 km"), with travel time from your campus.
+PostGIS + vector tiles (MapLibre) · server-side clustering · tiles
+cached at the edge · routing API for travel time
+09 Campus Passport
+One identity for every campus.
+PROBLEMEvery event uses a different form, and proof of
+participation is scattered.
+HOWOne QR identity for registration and check-in at any
+college. Check-ins add stamps and badges, and organizers
+issue VERIFIABLE CERTIFICATES that anyone can validate
+from a public link, ready to share on LinkedIn.
+signed short-lived QR tokens (verifiable offline by the organizer
+app) · certificates as signed credentials (W3C VC-inspired)
+10
+Ask CampusConnect
+Talk to the graph in plain language.
+PROBLEMFilters can't express "robotics clubs in Delhi that
+co-hosted a hackathon and have 200+ members".
+HOWA natural-language assistant that turns questions into
+safe, structured queries over the public graph and returns
+cards, not paragraphs.
+LLM tool-calling against a whitelisted query API (never raw SQL) ·
+permission-aware results · cached common intents
+11 College HQ & Sponsor Pool
+Value for institutions and the people who fund events.
+PROBLEMColleges can't see what their communities do.
+Small clubs can't attract sponsors alone.
+HOWHQ gives institutions approvals with risk flags, safety
+oversight, a collaboration/MoU registry and exportable
+activity reports. Sponsor Pool bundles several clubs'
+audiences into one sponsorship deal with a transparent split.
+role-scoped dashboards · k-anonymity (no segment under 50
+people is ever shown to sponsors) · report exports
+12
+
+--- Page 8 ---
+8CampusConnect · Product & Architecture Blueprint
+0505
+P R O D U C T  D E S I G N
+Key screens, designed for action
+Every core screen ends in one obvious action. Explanations ("why this match", "why this date") build trust
+in the AI instead of hiding it.
+Figure 2 · Collab Compass, Date Doctor and Event Launchpad (mobile). Data shown is illustrative.
+Design system
+Tokens, not hex codes
+Colour, type, spacing and radius live as
+shared tokens in packages/ui and
+drive both Tailwind (web) and NativeWind
+(mobile). Light and dark themes come
+free, and each college can theme its own
+HQ.
+Explainable AI patterns
+Every AI output shows its reasons as
+chips, a confidence state and an "edit"
+path. Nothing AI-generated gets
+published without a human confirming it.
+Accessible & multilingual
+WCAG 2.2 AA contrast, dynamic type,
+screen-reader labels and reduced motion.
+ICU message format with Devanagari-safe
+typography, plus Hinglish-tolerant search.
+9:41 5G ▮▮▮
+Collab Compass
+Partners for HackNSUT 2026 · 18
+matches
+DTU Design
+Society
+Delhi Technological
+University · ✓  Verified
+94%
+match
+WHY THIS MATCH
+They bring UI/UX · Branding
+You bring ML · Full-stack
+Both plan a Nov hackathon
+6.2 km away
+★  4.8
+trust
+11
+collabs
+620
+members
+Propose co-host
+Save · Skip
+IGDTUW Coding Club
+Judges available · 9.8 km
+88%
+JMI E-Cell
+Sponsor network · 7.1 km
+81%
+Discover Collab Pulse Chats Me
+9:41 5G ▮▮▮
+Date Doctor
+Best dates for a 400-person hackathon ·
+15 km
+NOVEMBER · AUDIENCE CLASH
+HEAT
+7 8 14 15 21 22 28
+Red = same-audience clash · Amber =
+partial · Teal = clear · Grey = exams
+Nov 7–8 · avoid
+IIIT-D tech fest (est. 2,000) · 1
+hackathon 4 km away
+Nov 21–22 ·
+best slot
+Recommended
+0 overlaps for your audience · before
+mid-sems at 3 nearby colleges ·
+predicted reach 1.8×
+Nov 28–29 · exams
+End-sems at DTU, NSUT (from
+College HQ calendars)
+Lock Nov 21–22
+Discover Events Pulse Chats Me
+9:41 5G ▮▮▮
+Event Launchpad
+Extracted from your poster in 4 s
+HackNSUT 2026
+Date 21–22 Nov ✓
+Venue NSUT Main Auditorium ✓
+Fee Free ✓
+Team size 2–4 confirm?
+Register unstop.com/… ✓
+REACH
+Campus City · 42
+colleges
+National
+SYNDICATE TO
+WhatsApp Channel
+Instagram post + story
+LinkedIn page
+Launch event →
+36-hour hackathon · poster.jpg
+Discover Events Pulse Chats Me
+
+--- Page 9 ---
+9CampusConnect · Product & Architecture Blueprint
+0606
+U S E R  J O U R N E Y S
+Four journeys, end to end
+These are the flows we optimise and instrument first. Each step maps to a service in §08.
+J1 · Priya finds a co-host in ten minutes Collaborate
+J2 · Aarav discovers life beyond his campus Discover
+J3 · Dr. Mehta governs without friction College HQ
+J4 · The yearly handover that never loses anything Sustain
+Instrumented by default. Each journey step emits a product event (for example collab.request.sent or
+passport.checkin) into ClickHouse, which gives us funnel dashboards from day one and training data for the
+ranking models in §12.
+1 · Compass
+Opens Collab
+Compass for
+"HackNSUT" and sees
+DTU Design Society at
+a 94% match.
+›
+2 · Trust
+Reads the reasons, the
+4.8 trust score and 11
+past collabs. ›
+3 · Request
+Sends a co-host
+request with the date
+Date Doctor
+suggested.
+›
+4 · Accept
+DTU accepts in the
+chat thread; a Collab
+Room and Charter are
+created instantly.
+›
+5 · Launch
+The joint event goes
+live and 42 nearby
+colleges are reached
+through targeting and
+syndication.
+1 · Onboard
+Picks interests and
+verifies with his college
+email OTP (Tier 1).
+›
+2 · Pulse
+Sees 12 events within 8
+km this weekend on
+Campus Pulse.
+›
+3 · Follow
+Follows 3
+communities, and his
+feed and digest start
+to personalise.
+›
+4 · Register
+Registers in one tap
+with Campus Passport
+and gets a QR.
+›
+5 · Proof
+Checks in, earns a
+badge and a verifiable
+certificate, and shares
+it on LinkedIn.
+1 · Submit
+A club submits an
+event with external
+guests and a ₹200 fee.
+›
+2 · Risk flags
+HQ highlights the
+outsiders, the fee and
+the late end time, and
+suggests a checklist.
+›
+3 · Approve
+One tap approves it,
+the event publishes
+and an audit log entry
+is written.
+›
+4 · Registry
+The completed collab
+is auto-logged in the
+college's collaboration
+registry.
+›
+5 · Report
+At semester end, the
+activity report is
+exported as PDF or
+CSV.
+1 · Term ends
+HQ prompts the club
+to start succession 30
+days before term end.
+›
+2 · Nominate
+The outgoing
+president nominates
+successors; the faculty
+coordinator approves.
+›
+3 · Transfer
+Roles, admin rights
+and social connectors
+move atomically to the
+new team.
+›
+4 · Vault
+Playbooks, the
+sponsor CRM and
+partner history are
+carried over in full.
+›
+5 · Ask
+The new lead asks the
+Vault "who sponsored
+us last year?" and gets
+cited answers.
+
+--- Page 10 ---
+10CampusConnect · Product & Architecture Blueprint
+0707
+S Y S T E M  A R C H I T E C T U R E
+A platform designed to grow without rewrites
+We start with one well-structured deployable, connect everything through events and push all heavy
+work off the request path. Services split out only when load, team size or failure isolation calls for it.
+C L I E N T S
+Web App
+Next.js · SSR + PWA
+Mobile App
+Expo React Native
+College HQ
+institution console
+Sponsor Portal
+aggregated insights
+WhatsApp Bot
+digests · RSVP
+Open Campus API
+ERP & partner hooks
+Cloudflare Edge · DNS · WAF · DDoS · CDN · bot management · image resizing · edge rate limits · waiting room
+API Gateway / BFF
+AuthN (JWT · passkeys) · per-user rate limits · routing · request IDs · OpenAPI 3.1 contract
+Realtime Gateway
+WebSockets · presence · resume tokens
+C O R E  P L A T F O R M E X T R A C T E D  /  A S Y N C  S E R V I C E S
+Core API · NestJS modular monolith (one deployable, strict module boundaries)
+Identity & Access
+users · roles · tiers
+Org Graph
+colleges · communities
+Events
+publish · register · QR
+Collaboration
+requests · rooms · ledger
+Social & Feed
+posts · follows · rank
+Discovery
+search · geo · recs API
+Opportunities
+calls · applications
+Legacy Vault
+docs · succession
+Messaging
+Node → Go at scale
+Notifications
+push · email · WhatsApp
+AI Services
+Python · FastAPI
+Media
+upload · scan · resize
+Trust & Safety
+moderation · fraud
+Syndication
+WA · IG · LinkedIn
+Event Backbone
+Transactional outbox → Debezium CDC → Kafka / Redpanda topics · BullMQ job queues · scheduler (cron, pre-scaling)
+D A T A
+Aurora Postgres
+PostGIS · pgvector · RLS
+Redis Cluster
+cache · counters · pub/sub
+Search
+Typesense → OpenSearch
+ScyllaDB
+messages (Stage 3)
+S3 + CDN
+media · backups
+ClickHouse
+analytics · features
+E X T E R N A L  P R O V I D E R S
+FCM / APNs Resend / SES WhatsApp Cloud Razorpay (UPI) LLM APIs Maps · Routing
+Cross-cutting: OpenTelemetry tracing · Sentry · feature flags · KMS encryption · Secrets Manager · least-privilege IAM · audit log
+Figure 3 · Logical architecture. Solid boxes are deployables; the dashed group is one deployable with internal module boundaries.
+
+--- Page 11 ---
+11CampusConnect · Product & Architecture Blueprint
+Architecture principles
+1 · Modular monolith first
+One codebase and one deploy for the core, with modules that
+never touch each other's tables directly (enforced with lint rules
+and separate schemas). Extracting a module later is a deployment
+change, not a rewrite.
+2 · Postgres is the truth; everything else is a
+projection
+Search indexes, feeds, counters and analytics are derived from
+domain events and can be rebuilt by replaying. That kills a whole
+class of consistency bugs.
+3 · Event-driven by default
+Every state change publishes a versioned domain event through a
+transactional outbox. Consumers are idempotent, and nothing
+slow (emails, AI, indexing) sits on the request path.
+4 · Design for spikes, not averages
+Fest launches and registration openings create 10–50× bursts. We
+use predictive pre-scaling, a waiting room, atomic seat counters
+and load shedding (§15).
+5 · Privacy & safety by design
+DPDP-aligned consent, data minimisation, minors' protections and
+India data residency are part of the schema and the defaults, not a
+later audit fix.
+6 · AI with guardrails
+Structured outputs validated against schemas, human
+confirmation before anything publishes, per-tenant cost quotas
+and a non-AI fallback for every AI feature.
+Request lifecycle: "publish an event"
+Client-perceived latency: about 120 ms (one DB transaction). Everything else completes asynchronously within seconds, and the event is searchable
+in under 5 s (p95).
+Edge
+Cloudflare WAF and
+rate limit; the request
+is routed to the
+nearest healthy origin.
+›
+Gateway
+JWT verified, trace ID
+attached, idempotency
+key checked in Redis. ›
+Core API
+Policy check
+(event:publish), Zod
+validation, then a
+single transaction
+writes the events row
+and the outbox row.
+›
+CDC
+Debezium streams the
+outbox row to Kafka
+topic
+event.lifecycle.
+›
+Consumers
+Search index, feed fan-
+out, reach-targeted
+notifications,
+syndication and the
+Date Doctor index all
+update in parallel.
+
+--- Page 12 ---
+12CampusConnect · Product & Architecture Blueprint
+0808
+S E R V I C E S  &  T E C H N O LO G Y
+Bounded contexts and the stack behind them
+SERVICE /
+MODULE RESPONSIBILITIES OWNS DATA LOAD PROFILE RUNTIME
+Identity &
+Access
+Sign-in, sessions, verification tiers,
+RBAC/ABAC policies, device list
+users, credentials,
+role_grants
+Read-heavy,
+latency-critical
+Core API
+Org Graph Colleges, communities, memberships
+with terms, follows, succession
+colleges, communities,
+memberships, follows
+Read-heavy,
+cacheable
+Core API
+Events Create/publish, reach, registration, seats,
+QR check-in, certificates
+events, event_hosts,
+registrations
+Spiky (launches) Core API + Redis
+Collaboration Requests, rooms, tasks, ledger, charter,
+resources, reviews, credits
+collab_*, resources,
+reviews
+Moderate,
+realtime
+Core API
+Social & Feed Posts, comments, reactions, timelines,
+ranking
+posts, reactions, timelines
+(Redis)
+Read-heavy Core API + Redis
+Discovery Search API, geo queries, recommendation
+serving, Ask CampusConnect
+search index (derived) Read-heavy Core API +
+Typesense
+Messaging DMs, community channels, collab
+threads, receipts, presence
+conversations, messages Write-heavy,
+realtime
+Node → Go;
+Scylla
+Notifications In-app, push, email, WhatsApp, digests,
+quiet hours, preferences
+notifications, preferences Bursty, async Workers
+AI Services Embeddings, poster extraction, Compass
+scoring, RAG, moderation models
+embeddings, prompt
+registry
+API/GPU-bound,
+async
+Python FastAPI
+Media Presigned upload, malware scan,
+resize/transcode, CDN URLs
+object metadata Bandwidth-
+heavy
+S3 + workers
+Trust & Safety Reports, review queue, spam & fraud
+signals, appeals, bans
+reports, cases, signals Async Python + rules
+College HQ &
+Analytics
+Approvals, dashboards, exports, sponsor
+insights (k-anonymous)
+approvals, aggregates Batch / OLAP Core API +
+ClickHouse
+Technology stack and why
+LAYER CHOICE WHY CONSIDERED
+Monorepo Turborepo + pnpm Web, mobile and API share Zod schemas, the API
+client and design tokens
+Nx
+Web Next.js 15 (React 19, RSC, ISR) SEO for public community/event pages; ISR
+absorbs launch spikes; PWA
+Remix, SvelteKit
+Mobile Expo React Native + Expo Router +
+EAS
+One codebase for iOS and Android, OTA updates,
+push and deep links built in
+Flutter
+Client state TanStack Query + Zustand + MMKV Cache-first, offline persistence, optimistic updates Redux Toolkit
+API NestJS (TypeScript), REST + OpenAPI
+3.1
+Modules, DI and guards map cleanly to bounded
+contexts and RBAC
+Fastify, tRPC
+ORM /
+validation
+Drizzle + Zod SQL-first and type-safe; one schema from form to
+database
+Prisma
+
+--- Page 13 ---
+13CampusConnect · Product & Architecture Blueprint
+Database Aurora PostgreSQL 16 + PostGIS +
+pgvector
+Relational + geo + vectors in one engine; Global
+Database for DR
+MongoDB
+Cache /
+queues
+Redis (ElastiCache) + BullMQ Sub-ms reads, atomic counters, pub/sub, delayed
+jobs
+Memcached, SQS
+Streaming Kafka (MSK) / Redpanda + Debezium Durable, replayable domain events; CDC keeps
+writes transactional
+RabbitMQ
+Search Typesense → OpenSearch at scale Typo tolerance, facets, geo and vector re-rank Algolia,
+Meilisearch
+Analytics ClickHouse + PostHog Columnar OLAP for dashboards and ML features;
+product funnels and flags
+BigQuery
+AI Python FastAPI, LLM APIs, open
+embedding model, LightGBM
+Structured extraction, RAG, learning-to-rank;
+model-agnostic gateway
+—
+Infra AWS EKS + Karpenter, Terraform,
+Argo CD
+Autoscaling on spot + on-demand; GitOps;
+reproducible environments
+ECS, GCP
+Edge Cloudflare (CDN, WAF, Waiting
+Room, R2)
+Indian PoPs, DDoS protection, cheap egress CloudFront
+Observability OpenTelemetry → Grafana
+(Prometheus, Loki, Tempo) + Sentry
+Vendor-neutral traces, metrics and logs; mobile
+crash reporting
+Datadog
+
+--- Page 14 ---
+14CampusConnect · Product & Architecture Blueprint
+0909
+D ATA  A R C H I T E C T U R E
+A graph modelled in relational form
+Twelve core entities carry the whole product. Terms on memberships, trust on communities and slots on
+resources are the modelling choices that make the novel features possible.
+colleges
+● id
+name · short_name
+city · state · tier
+geo geography(Point)
+email_domains[]
+communities
+● id
+→ college_id
+slug · category[]
+skills_vec · goals_vec
+trust_score · tier
+collab_requests
+● id
+→ from_comm · to_comm
+type (co-host/judges…)
+match_score · reasons
+status · expires_at
+collab_rooms
+● id
+→ request_id
+charter (signed, v#)
+tasks · ledger
+status · completed_at
+users
+● id
+→ college_id
+verified_tier (0–3)
+interests[] · embedding
+is_minor · consent_ref
+memberships
+→ user_id
+→ community_id
+role (owner…member)
+term 'AY2026-27'
+status
+resources
+● id
+→ community_id
+kind venue|gear|people
+slot tstzrange
+EXCLUDE overlap
+reviews
+● id
+→ room_id
+→ reviewer_comm
+ratings jsonb
+created_at
+registrations
+→ event_id
+→ user_id
+passport_token
+checked_in_at
+certificate_id
+events
+● id
+title · slug · tags[]
+starts_at · ends_at
+geo · reach · capacity
+status · approval_id
+event_hosts
+→ event_id
+→ community_id
+role primary|co-host
+vault_docs
+● id
+→ community_id
+term · kind · acl
+chunks · embedding
+source_url
+● primary key · → foreign key · also: follows, posts, conversations, messages, notifications, opportunities, approvals, outbox, audit_log (omitted for clarity)
+Figure 4 · Core entity model.
+Polyglot persistence: the right store for each shape of data
+DATA STORE WHY
+Core relational (users, orgs,
+events, collabs)
+PostgreSQL (Aurora) ACID, constraints, joins, row-level security for college-scoped
+data
+Geo (campuses, venues) PostGIS Radius and bounding-box queries on GIST indexes; powers
+Pulse and Date Doctor
+Embeddings (communities,
+users, vault)
+pgvector (HNSW) One database at the start; moves to a dedicated vector index
+only if recall or latency demands it
+Messages Postgres monthly partitions →
+ScyllaDB
+Append-heavy; partition key conversation_id, clustering by
+ULID
+Hot reads, counters,
+timelines, sessions
+Redis Cluster Sub-millisecond reads; atomic seat counters via Lua
+Search documents Typesense / OpenSearch Typo tolerance, facets, geo filters, synonyms, Hinglish
+transliteration
+Product & ML events ClickHouse Billions of rows, cheap aggregation; feature generation for
+ranking
+Media, exports, backups S3 / R2 behind CDN Durable, cheap; presigned direct uploads keep the API
+stateless
+
+--- Page 15 ---
+15CampusConnect · Product & Architecture Blueprint
+Database techniques that matter
+-- Resource Exchange: double-booking is impossible, enforced by the database itself
+CREATE EXTENSION btree_gist;
+ALTER TABLE resource_bookings ADD CONSTRAINT no_overlap
+  EXCLUDE USING gist (resource_id WITH =, slot WITH &&) WHERE (status = 'confirmed');
+-- Campus Pulse / Date Doctor: published events within 8 km in a time window
+SELECT id, title FROM events
+WHERE status = 'published' AND starts_at BETWEEN $1 AND $2
+  AND ST_DWithin(geo, ST_MakePoint($lng, $lat)::geography, 8000);
+ULIDs as primary keys: sortable by time, safe to generate on the client for offline creates.✓
+Partitioning: messages and notifications by month; old partitions are detached and archived to S3 (Parquet).✓
+Denormalised counters (member_count, interested_count) are updated from events and reconciled nightly, so hot
+rows never lock.
+✓
+Zero-downtime migrations follow expand → migrate → contract, verified in CI against a production-sized snapshot.✓
+
+--- Page 16 ---
+16CampusConnect · Product & Architecture Blueprint
+1010
+E V E N T - D R I V E N  B A C K B O N E
+Every change, reliably everywhere
+Writing to the database and publishing to Kafka in two separate steps loses events when one step fails.
+The transactional outbox makes the business write and the event a single atomic operation.
+Core API
+command handler
+PostgreSQL
+1 txn: business row
++ outbox row
+Debezium CDC
+reads WAL, never
+polls tables
+Kafka topics
+org.community.*
+event.lifecycle.*
+collab.*
+social.post.*
+messaging.*
+user.activity.*
+trust.signal.*
+partition key = aggregate_id
+retention 7 days · replayable
+Search indexer → Typesense
+Notification fan-out → push · email · WA
+Feed fan-out → Redis timelines
+Recsys features → ClickHouse
+Trust & Safety scanner
+Syndication bridge → IG · WA · LinkedIn
+College HQ registry · audit sink
+Delivery guarantees
+• at-least-once + idempotent consumers (event_id dedupe)
+• per-aggregate ordering via partition key
+• retries with backoff → dead-letter topic → replay tool
+Figure 5 · Outbox → CDC → Kafka → independent consumers. Adding a feature means adding a consumer, never editing the write path.
+Domain event catalogue (excerpt)
+EVENT MAIN CONSUMERS
+CommunityVerified Search, notifications, trust score
+EventPublished Search, feed, reach-targeted
+notify, syndication, Date Doctor
+RegistrationCreated Passport, analytics, organizer
+alerts
+CollabRequested Notifications, messaging (open
+thread)
+CollabAccepted Room provisioning, charter draft,
+HQ registry
+CollabCompleted Review prompts, credits, Compass
+training data
+MessageSent Offline push, async moderation,
+analytics
+TermHandoverApproved Permission transfer, vault ACLs,
+notifications
+Versioned event envelope
+{
+  "event_id":     "01JB7Z3K9X…",   // ULID, dedupe key
+  "type":         "EventPublished",
+  "version":      2,                // schema registry
+  "aggregate_id": "evt_8f2…",       // partition key
+  "occurred_at":  "2026-11-02T10:15:04Z",
+  "actor":        "usr_41a…",
+  "trace_id":     "4bf92f35…",       // OTel propagation
+  "payload": { "reach": "city", "geo": [77.03, 28.61],
+               "hosts": ["com_nsut_code", 
+"com_dtu_design"] }
+}
+Schemas are stored in a registry, and backward-compatible changes are
+enforced in CI, so producers and consumers can deploy independently.
+
+--- Page 17 ---
+17CampusConnect · Product & Architecture Blueprint
+1111
+R E A L - T I M E  M E S S A G I N G
+Chat that feels instant and never loses a message
+Messaging drives the most writes, connections and safety risk in the system, so it's the first service we
+extract and the one we design most carefully.
+Sender app Realtime GW Messaging svc Message store Redis pub/sub Recipient (GW)
+send {client_msg_id, body}
+1
+authz + rate limit
+2
+INSERT (ULID, idempotent)
+3
+ack: sent ✓  (server ULID)
+4
+PUBLISH conv:{id}
+5
+deliver to socket
+6
+read receipt → last_read_id · "seen ✓✓ "
+7
+Recipient offline?
+MessageSent → Notification svc sends a push (collapsed per conversation, quiet hours respected). On reconnect the client syncs with GET /messages?after=<cursor>.
+Figure 6 · Send path. The sender is acknowledged after a durable write, before fan-out.
+Semantics
+At-least-once delivery, made exactly-
+once to the user with
+client_msg_id idempotency
+Ordering per conversation by server
+ULID
+Edits and deletes are events;
+tombstones are kept for sync
+Conversation types
+1:1 DM (Tier 1+, or a shared
+community)
+Community channels
+(announcements, general)
+Collab threads, linked to rooms
+Event Q&A, organizer-moderated
+Scale tactics
+Stateless gateways: reconnect
+anywhere with a resume token, no
+sticky sessions
+Channels with > 5k members switch
+from push to pull-on-open with
+unread counters
+Presence via Redis keys with a 30 s
+TTL heartbeat
+Go gateway at Stage 3, about 50k
+sockets per node
+Safety inside chat. New accounts can't DM strangers. Per-conversation rate limits, link scanning, one-tap report
+with message context, async ML moderation and DMs to minors restricted to verified shared communities.
+
+--- Page 18 ---
+18CampusConnect · Product & Architecture Blueprint
+1212
+I N T E L L I G E N C E  L AY E R
+Matching, ranking and AI that explains itself
+Collab Compass scoring
+Match(A, B) = 0.30·sim(goalsA, goalsB) + 0.25·comp(skillsA, skillsB) + 0.15·geo(dAB) + 0.15·trust(B) +
+0.10·activity(B) + 0.05·novelty(A, B) − clash(A, B)
+comp = relevance-weighted (1 − sim(skills)) · geo(d) = e−d/15 km · novelty rewards first-time cross-college edges · clash
+penalises calendar conflicts
+The starting weights are hand-tuned. Once roughly 500 collaborations have completed, we replace them with a learning-to-rank model
+(LightGBM, LambdaMART) trained on requested → accepted → completed → well-reviewed outcomes. Each component is shown to users as a
+reason chip, so the explanation is the model itself rather than a generated rationalisation.
+Recommendation pipeline
+Signals
+• follows · joins
+• registrations · check-ins
+• dwell · clicks · hides
+• collab outcomes
+• reviews · trust
+• profile interests
+• location (coarse)
+Stores
+• ClickHouse events
+• Feature store (Redis)
+• Embeddings (pgvector)
+• Graph edges (Postgres)
+nightly batch +
+streaming updates
+Candidate generation
+• graph 2-hop neighbours
+• ANN semantic match
+• geo radius (PostGIS)
+• trending in your city
+• small-college pool
+~500 candidates
+in < 40 ms
+Rank → re-rank
+v1 weighted score
+v2 LightGBM (LTR)
+v3 two-tower model
+• MMR diversity
+• fairness exposure floor
+• block / clash filters
+• freshness boost
+Surfaces
+• Home feed
+• Discover
+• Collab Compass
+• Campus Pulse
+• Smart Digest
+• Ask CampusConnect
+Figure 7 · One pipeline serves every discovery surface.
+Fairness by design: "Small College Boost". Left alone, a network amplifies famous campuses. We reserve a
+minimum exposure share in every ranked list for communities from smaller and tier-2/3 colleges, and measure it as a
+first-class metric. This directly serves PS 2's goal of connecting across campuses.
+AI services and guardrails
+CAPABILITY APPROACH GUARDRAIL
+Poster → event Multimodal LLM with JSON-schema output,
+then geocoding
+Per-field confidence; low-confidence fields require
+confirmation; manual form fallback
+Ask the Vault (RAG) Chunk + embed vault docs; retrieve top-k
+with ACL filter; cite sources
+Only documents the asker can read; "I don't know" when
+retrieval is weak
+Ask CampusConnect LLM tool-calling over a whitelisted query
+API
+No raw SQL; public data only; results rendered as cards
+Moderation Fast classifier first; LLM only for borderline
+cases; image NSFW model
+Human review queue; appeal flow; audit trail
+Translation LLM translation of event descriptions (EN ↔
+HI + regional)
+Organizer can edit; original always available
+Cost control: a model gateway routes small tasks to cheap models, embeddings are cached by content hash, jobs are batched off-peak, and per-
+community daily quotas apply. Prompt-injection hardening treats all user content strictly as data.
+
+--- Page 19 ---
+19CampusConnect · Product & Architecture Blueprint
+1313
+S E A R C H  &  F E E D
+Find anything; see what matters
+Hybrid search
+Indexes: communities, events, colleges, opportunities, people
+(opt-in only).
+Retrieval: BM25 keyword + vector semantic re-rank + geo
+filter + facets (category, date, reach, verified, fee).
+India-aware: synonyms ("E-Cell" ↔ entrepreneurship, "hack" ↔
+hackathon), Hinglish transliteration, abbreviation expansion
+(NSUT, IGDTUW).
+Freshness: indexed from domain events; p95 under 5 s from
+write to searchable.
+Zero-result rescue: relax filters automatically, then suggest
+Ask CampusConnect.
+Feed architecture
+Stage 1, fan-out on read: gather recent posts from follows,
+rank and cache for 60 s per user in Redis.
+Stage 2, hybrid: fan-out on write into Redis timelines for
+normal accounts; large accounts (> 10k followers) are merged
+at read time.
+Mixing: followed content, recommended communities, nearby
+events and opportunities, with diversity rules (max 2
+consecutive items from one source).
+Negative feedback: "show less" signals feed straight into the
+ranker.
+Feed ranking function (v1)
+score(u, p) = w₁·affinity(u, author) + w₂·interest(u, p) + w₃·proximity(u, p) + w₄·velocity(p) + w₅·e−Δt/τ −
+penalty(seen, hidden, reported)
+Affinity is built from interactions with a decay. Velocity is engagement per hour, normalised by audience size so small clubs can trend. τ is around
+18 h for posts and is tied to the start time for events.
+SEO as a discovery channel
+Every public community, event and opportunity page is server-rendered with schema.org JSON-LD (Event,
+Organization). Events can then appear in Google's rich results, so a student searching "hackathon in Delhi this
+weekend" can land on CampusConnect without ever having heard of it. That's discovery the problem statement asks
+for, at zero marginal cost.
+
+--- Page 20 ---
+20CampusConnect · Product & Architecture Blueprint
+1414
+T R U S T,  S A F E T Y,  S E C U R I T Y  &  P R I VA C Y
+Safe for students, credible for colleges
+Verification tiers
+TIER HOW IT'S EARNED WHAT IT UNLOCKS
+0  Unverified Email or Google sign-in Browse, follow, register for public events
+1  Student-verified College-domain email OTP, or ID upload with
+manual review
+Join communities, DM members, apply to
+opportunities
+2  Community-verified Faculty coordinator approves via College HQ City/national reach, collab requests, Resource
+Exchange listings
+3  Institution-verified Official domain + signed authorisation letter College HQ, community verification, academic
+calendar import
+Moderation pipeline
+Pre-publish classifier on text and images: allow, hold for review,
+or block.
+User reports with context; a reviewer queue with SLAs (P0
+within 1 h, others within 24 h).
+Appeals, repeat-offender scoring, device-level ban evasion
+checks.
+Graph anomaly detection for fake engagement, review rings
+and spam collab requests.
+Link unfurling through a sandboxed fetcher with phishing and
+malware lists.
+Protecting minors
+Users under 18 are flagged at onboarding and need verifiable
+parental consent, as the DPDP Act requires for children's data.
+Private profiles by default; excluded from people search and
+from all sponsor targeting.
+No behavioural tracking for ads; DMs only within verified
+shared communities.
+Event approvals flag overnight or off-campus events involving
+minors.
+Security controls
+AREA CONTROLS
+Identity OIDC (Google), email OTP, passkeys (WebAuthn); 15-min access JWT + rotating refresh tokens with reuse
+detection; device/session list with remote logout
+Authorisation RBAC with community-scoped roles + ABAC policies (tier, college, minor status); Postgres row-level security
+as defence in depth; every privileged action audited
+Data protection TLS 1.3 everywhere; AES-256 at rest via KMS; field-level encryption for phone and date of birth; signed,
+expiring media URLs
+Application OWASP ASVS L2; Zod validation on every input; strict CSP; SSRF guards; presigned uploads with MIME sniffing
+and malware scan; per-route rate limits
+Supply chain Dependabot, CodeQL SAST, container scanning, SBOM generation, signed images (cosign), pinned
+dependencies
+Operations Least-privilege IAM, Secrets Manager with rotation, break-glass access with alerts, DAST (OWASP ZAP) in CI,
+annual third-party pentest, responsible-disclosure programme
+DPDP Act 2023 alignment. Granular, purpose-specific and withdrawable consent (notices in English and Hindi).
+Self-service rights to access, correction and erasure, plus a grievance officer. Data minimisation and a published
+retention schedule. A breach-notification workflow. Verifiable parental consent for children. All personal data stored
+and processed in Indian AWS regions.
+
+--- Page 21 ---
+21CampusConnect · Product & Architecture Blueprint
+1515
+S C A L A B I L I T Y  E N G I N E E R I N G
+Sized with numbers, not adjectives
+Year-3 target: 5M registered users, 1M DAU, 3,000 colleges, 60,000 communities. Peaks are modelled at
+5–10× the average because college traffic is extremely bursty.
+METRIC ASSUMPTION AVERAGE PEAK / TOTAL
+API requests 60 requests / DAU / day ≈ 700 rps ≈ 5,000 rps
+Messages 15 / DAU / day ≈ 175 msg/s ≈ 1,500 msg/s
+Concurrent sockets 15% of DAU online at peak — ≈ 150,000 connections
+Notifications 8 / DAU / day ≈ 95 / s ≈ 2,000 / s (digest bursts)
+Search 5 queries / DAU / day ≈ 60 qps ≈ 600 qps
+Message storage 0.5 KB × 15M / day ≈ 7.5 GB / day ≈ 2.7 TB / year (90 days hot)
+Media 60k communities × 30 images ×
+300 KB
+≈ 540 GB / month CDN serves > 95% of reads
+Evolution path: grow in stages, never rewrite
+Prove the loop
+Next.js + Supabase
+(Postgres, Auth, Realtime,
+Storage)
+Vercel hosting
+LLM API
+Same schema as
+production
+Modular monolith
+Core API + realtime +
+workers on EKS
+Aurora + 1 read replica
+Redis, BullMQ, Typesense
+Cloudflare in front
+Extract & stream
+Messaging, notifications,
+AI extracted
+Kafka + Debezium outbox
+PgBouncer, replicas,
+partitions
+ClickHouse, OpenSearch
+Cells & shards
+Cell-based deployment by
+region
+ScyllaDB for messages
+Citus sharding by
+college_id
+Go realtime gateway;
+multi-region
+Cell-based architecture (Stage 3): each "cell" is a full copy of the stack serving a set of regions (for example North, South, West, East), with a thin
+global directory routing users to their home cell. Cross-cell objects such as national events and collaborations live in a global tier. A failure is
+contained to one cell, and capacity grows by adding cells.
+Surviving "Fest Rush"
+Predictive pre-scaling
+Registration opening times are known in advance, so the
+scheduler pre-scales API and realtime pods and warms caches 10
+minutes before every launch above a reach threshold. We don't
+wait for autoscaling to react.
+Virtual waiting room
+For extreme launches, Cloudflare Waiting Room admits users at a
+sustainable rate with signed admission tokens. The rest see a fair
+queue position instead of errors.
+Atomic seat inventory
+Seats are decremented atomically in Redis (a Lua script), the
+registration is confirmed asynchronously in Postgres, and a nightly
+job reconciles the two. There's no overselling and no hot-row
+locks.
+Load shedding & degradation
+Priority classes are registration and messaging, then feed, then
+recommendations. Under pressure, recommendations fall back to
+cached "trending" and non-critical work is deferred to queues.
+STAGE 0 · HACKATHON
+STAGE 1 · 0–100K USERS
+STAGE 2 · 100K–2M
+STAGE 3 · 2M–20M
+
+--- Page 22 ---
+22CampusConnect · Product & Architecture Blueprint
+Caching layers
+LAYER WHAT TTL INVALIDATION
+Edge (CDN) Public pages (ISR), images, map tiles, OG cards 60 s – 1 day Cache tags purged on domain
+events
+Redis Entity cache, feed pages, counters, sessions, rate
+limits
+60 s – 5 min Write-through + event-driven
+delete
+In-process Config, feature flags, policy rules 30 s Pub/sub broadcast
+Database guardrails: PgBouncer transaction pooling; reads routed to replicas where staleness is acceptable; a query budget (p95 under 20 ms)
+enforced with pg_stat_statements alerts; request coalescing on hot event pages.
+
+--- Page 23 ---
+23CampusConnect · Product & Architecture Blueprint
+1616
+D E P LOY M E N T,  R E L I A B I L I T Y  &  D I S A S T E R  R E C O V E R Y
+Built to stay up
+Cloudflare · Anycast DNS · WAF · CDN · Waiting Room · health-checked origin failover
+AWS ap-south-1 (Mumbai) · PRIMARY
+VPC · 3 Availability Zones
+AZ-a AZ-b AZ-c
+PUBLIC
+ALB · NAT gateway
+PUBLIC
+ALB · NAT gateway
+PUBLIC
+ALB · NAT gateway
+APP · EKS NODES
+core-api pods
+realtime gateway pods
+workers · AI pods
+Debezium · Argo
+APP · EKS NODES
+core-api pods
+realtime gateway pods
+workers · AI pods
+Karpenter spot pool
+APP · EKS NODES
+core-api pods
+realtime gateway pods
+workers · AI pods
+Karpenter spot pool
+DATA
+Aurora writer
+Redis primary shards
+MSK broker 1
+Typesense node 1
+DATA
+Aurora reader
+Redis replicas
+MSK broker 2
+Typesense node 2
+DATA
+Aurora reader
+Redis replicas
+MSK broker 3
+Typesense node 3
+ap-south-2 (Hyderabad) · DR
+Aurora Global DB
+secondary · typical lag < 1 s
+S3 cross-region replicas
+media · backups · archives
+EKS pilot light
+scaled by Terraform on failover
+Failover runbook
+promote DB → scale → flip origin
+rehearsed quarterly
+Regional services
+• S3 (media, exports, WAL archive)
+• KMS · Secrets Manager
+• ECR (signed images)
+• CloudWatch → Grafana
+• AWS Backup (PITR 35 days)
+Figure 8 · Production topology: multi-AZ primary in Mumbai, warm DR in Hyderabad, all personal data inside India.
+Service-level objectives
+JOURNEY (SLI) SLO
+API availability 99.9% / month (43 min
+budget)
+Read latency, p95 < 250 ms
+Message delivery (online),
+p99
+< 1 s
+Registration success under
+load
+99.95%
+Notification handoff, p95 < 30 s
+Search freshness, p95 < 5 s
+Resilience
+RPO < 1 min, RTO < 1 h for a full-region loss; zero data loss for an
+AZ loss.
+✓
+Timeouts, retries with jitter, circuit breakers and bulkheads around
+every external API (WhatsApp, LLM, maps).
+✓
+Pod disruption budgets, topology spread across AZs, graceful
+shutdown that drains WebSockets.
+✓
+Error-budget policy: if the budget is burnt, feature releases freeze
+until reliability work lands.
+✓
+Quarterly game days: AZ kill, Redis failover, Kafka broker loss,
+region failover drill.
+✓
+
+--- Page 24 ---
+24CampusConnect · Product & Architecture Blueprint
+1717
+O B S E R VA B I L I T Y,  D E V O P S  &  Q UA L I T Y
+Ship fast, see everything
+Observability
+OpenTelemetry traces from client →
+gateway → service → Kafka → worker,
+linked by trace_id.
+RED dashboards per service, USE
+dashboards per resource.
+SLO burn-rate alerts (fast + slow
+windows) instead of noisy CPU alerts.
+Synthetic probes from Delhi, Mumbai,
+Bengaluru, Kolkata and Chennai.
+Sentry release health and crash-free
+sessions for mobile.
+On-call rotation, runbooks and
+blameless postmortems.
+CI pipeline
+Trunk-based development; PRs gated
+on lint, type-check and affected-only
+builds (Turborepo cache).
+Unit (Vitest), contract tests against
+OpenAPI, integration (Testcontainers:
+Postgres, Redis, Kafka).
+E2E: Playwright (web), Maestro
+(mobile).
+Security: CodeQL, dependency and
+image scans, ZAP baseline.
+Preview environment per PR (Vercel +
+branch database).
+CD & release
+GitOps with Argo CD; every
+environment declared in Git.
+Canary releases via Argo Rollouts, with
+automatic rollback on SLO regression.
+Feature flags for every user-facing
+change; kill switches for AI features.
+Mobile: EAS Build for store releases,
+EAS Update channels for staged OTA
+rollouts.
+DB migrations: expand → migrate →
+contract, never breaking N-1.
+Environments
+Quality bar
+80%
+coverage on domain modules
+(policies, scoring, ledger)
+< 15 min
+commit-to-production lead
+time
+< 5%
+change failure rate target
+99.5%
+crash-free mobile sessions
+Repository layout
+campusconnect/
+├── apps/
+│   ├── web/          # Next.js: public pages (SSR/ISR) + app + College HQ + sponsor portal
+│   ├── mobile/       # Expo Router app (iOS + Android)
+│   ├── api/          # NestJS modular monolith: identity, org, events, collab, social, discovery…
+│   ├── realtime/     # WebSocket gateway
+│   ├── worker/       # Kafka/BullMQ consumers, schedulers, pre-scaler
+│   └── ai/           # Python FastAPI: extraction, embeddings, Compass, RAG, moderation
+├── packages/
+│   ├── schemas/      # Zod schemas = single source of truth for types
+│   ├── api-client/   # generated from OpenAPI
+│   ├── ui/           # design tokens + shared components
+│   ├── db/           # Drizzle schema + migrations
+│   └── events/       # domain event contracts + registry
+└── infra/            # Terraform modules, Helm charts, Argo apps
+Local
+Docker Compose: Postgres +
+PostGIS, Redis, Redpanda,
+Typesense, MinIO. Seeded
+data.
+›
+PR preview
+Ephemeral stack per PR with
+anonymised fixtures; link
+posted on the PR.
+›
+Staging
+Production-like, with load
+tests (k6) replaying a fest-rush
+profile weekly.
+›
+Production
+Canary at 5%, then 25%, then
+100%, gated on error rate and
+latency.
+
+--- Page 25 ---
+25CampusConnect · Product & Architecture Blueprint
+1818
+C L I E N T  A R C H I T E C T U R E
+Web and app, one brain
+The web and mobile apps share schemas, the API client, design tokens and translations, so a feature is
+designed once and delivered on both.
+Web (Next.js)
+React Server Components for public pages: fast first paint,
+indexable, JSON-LD.
+ISR on event and community pages, so launch spikes hit the
+CDN instead of the origin.
+Client components for the logged-in app, using TanStack
+Query for cache and optimistic updates.
+PWA install and Web Push for students who won't install
+another app.
+College HQ and the sponsor portal are separate route groups
+with their own RBAC layouts.
+Mobile (Expo React Native)
+Offline-first: query cache persisted to MMKV; writes queued
+in a local outbox and replayed on reconnect.
+Universal links and deep links for every shareable entity (event,
+community, collab, certificate).
+Push categories with inline actions (RSVP, accept collab, reply).
+Organizer mode: QR scanner verifies Passport tokens offline
+using a cached public key.
+Biometric re-auth for admin actions; OTA updates for fast fixes.
+Built for every phone and every network
+Lite mode
+Under 150 KB of initial JS on public pages,
+text-first feed, adaptive image quality
+using the Save-Data hint and network
+type.
+Languages
+English and Hindi at launch, then Tamil,
+Telugu, Bengali and Marathi. ICU plurals,
+locale-aware dates, AI-assisted
+translations that people can edit.
+Accessibility
+WCAG 2.2 AA, 44 px touch targets,
+dynamic type, screen-reader labels,
+reduced-motion variants, colour-blind-
+safe status colours.
+Performance budgets
+METRIC WEB TARGET MOBILE TARGET
+Largest Contentful Paint (4G) < 2.0 s —
+Interaction to Next Paint < 200 ms —
+Cold start (mid-range Android) — < 2.5 s
+App download size — < 30 MB
+Feed scroll 60 fps 60 fps (FlashList)
+
+--- Page 26 ---
+26CampusConnect · Product & Architecture Blueprint
+1919
+A P I  D E S I G N
+A contract-first, open API
+REST with an OpenAPI 3.1 contract, versioned under /v1. Clients are generated from the spec, so web,
+mobile and partners can never drift from it.
+# Identity
+POST /v1/auth/otp:request · /v1/auth/otp:verify
+POST /v1/auth/refresh · /v1/auth/passkeys
+POST /v1/me/verifications        # college email OTP
+# Org graph
+GET  /v1/colleges?city=&q=
+GET  /v1/communities?near=lat,lng&radius=&cat=
+POST /v1/communities/{id}/join
+POST /v1/communities/{id}/succession
+# Events
+POST /v1/events:extract           # poster → draft
+POST /v1/events · POST /v1/events/{id}:publish
+GET  /v1/events/{id}/date-doctor?from=&to=
+POST /v1/events/{id}/registrations
+POST /v1/checkins                 # Passport token
+# Collaboration
+GET  /v1/compass?for_event=&type=co-host
+POST /v1/collabs · PATCH /v1/collabs/{id}
+GET  /v1/rooms/{id} · POST /v1/rooms/{id}/tasks
+POST /v1/rooms/{id}/charter:approve
+GET  /v1/resources?kind=venue&near=
+POST /v1/resources/{id}/bookings
+# Social, messaging, discovery
+GET  /v1/feed?cursor=
+GET  /v1/conversations/{id}/messages?after=
+GET  /v1/search?q=&type=&near=
+POST /v1/ask                     # Ask CampusConnect
+POST /v1/media:upload-url · POST /v1/reports
+Conventions
+Cursor pagination everywhere
+Idempotency-Key on every write
+ETags + If-None-Match
+Errors as RFC 9457 problem+json
+Sparse fieldsets: ?fields=
+Rate limits
+Anonymous: 60 / min / IP
+Authenticated: 600 / min / user
+Auth endpoints: 5 / min / IP
+Messaging: 30 msgs / min / user
+Headers: RateLimit-* (IETF draft)
+Open Campus API
+OAuth client-credentials for colleges
+and partners
+HMAC-signed webhooks:
+event.published,
+registration.created,
+collab.completed
+ERP/LMS sync of academic calendars
+Scoped, audited, revocable keys
+
+--- Page 27 ---
+27CampusConnect · Product & Architecture Blueprint
+2020
+G O - TO - M A R K E T,  B U S I N E S S  M O D E L  &  M E T R I C S
+Solving the empty-room problem
+The usual weakness of a network product is that it needs a network to be useful. Our launch strategy
+goes after that directly: seed, give single-player value, then let network loops take over.
+1 · Seed the graph
+Pre-create claimable pages for the top
+500 colleges and their best-known
+communities in Delhi NCR from publicly
+available information. "Claim your page"
+goes through verification, so
+communities arrive to a page that already
+exists.
+2 · Single-player value
+Launchpad, Syndication, Legacy Vault and
+Date Doctor (on public calendars) are
+useful to one club with nobody else on
+the platform. That's the reason to sign up
+on day one.
+3 · Network loops
+Every shared event link brings in students.
+Every collab request invites a partner
+community. Every Passport certificate
+shared on LinkedIn advertises the
+platform.
+Club publishes
+via Launchpad
+Syndicated
+WhatsApp · Instagram
+Students register
+with Passport
+Follow + digest
+become members
+Start new clubs
+and collab requests
+THE PROMOTION GROWTH LOOP
+Business model
+WHO WHAT THEY PAY FOR
+Students Nothing, ever
+Communities Free core; Pro plan for advanced analytics,
+unlimited rooms, custom branding
+Colleges College HQ annual licence: approvals,
+reports, calendar sync, branding
+Sponsors &
+brands
+Sponsor Pool deals and clearly labelled
+promoted opportunities; performance-
+based pricing
+Paid events Small platform fee on ticketing via Razorpay
+(UPI)
+Guardrails: we never sell personal data, never target minors and always
+label promoted content.
+Metrics that matter
+North Star: cross-campus collaborations completed
+per month. It only goes up when discovery, trust,
+promotion and collaboration all work, which makes it
+the best single measure of PS 2.
+% of communities verified and weekly-active
+Share of event registrations coming from other colleges
+Collab request → acceptance → completion rates
+Time-to-first-collab for a new community
+Small-college exposure share (fairness)
+D30 retention of students; digest click-through rate
+
+--- Page 28 ---
+28CampusConnect · Product & Architecture Blueprint
+2121
+E X E C U T I O N
+Hackathon build plan, roadmap & risks
+Build sprint (Stage 0)
+DAY BUILD DONE WHEN
+Day 1 Monorepo, Next.js + Supabase, full schema (§09), auth with
+college-email verification, RLS policies
+Two users from different colleges can sign in with verified
+tiers
+Day 2 Community pages, memberships and roles, Event Launchpad
+(poster → draft with an LLM), reach targeting
+A poster becomes a published event in under 30 s
+Day 3 Discovery: search, Campus Pulse map (PostGIS + MapLibre),
+Date Doctor clash strip
+"Events within 8 km this weekend" works on seeded data
+Day 4 Collab Compass scoring, collab requests, real-time chat
+thread, auto-created Collab Room with charter
+The two-phone demo flow works live end-to-end
+Day 5 Seed realistic data (20 colleges, 80 communities, 60 events),
+Passport QR, polish, PWA, demo video backup
+3-minute demo rehearsed 5 times without a failure
+3-minute demo script
+Demo safety net: seeded data, AI responses cached for the demo poster, an offline fallback for every external API and a recorded backup video.
+Roadmap
+0–3 months
+Delhi NCR pilot
+20 colleges, 300 communities. Core pillars,
+College HQ beta, WhatsApp digests,
+Hindi.
+3–9 months
+Five metros
+Bengaluru, Mumbai, Pune, Hyderabad,
+Chennai. Paid College HQ, Resource
+Exchange, learning-to-rank Compass,
+Stage 2 infra.
+9–18 months
+National
+Regional languages, Sponsor Pool, Open
+Campus API, ticketing, alumni mentors,
+Stage 3 cells.
+Risks and mitigations
+RISK MITIGATION
+Cold start / empty network Claimable seeded pages, single-player value, city-by-city density, fest-season launch with ambassadors
+Fake communities and spam Verification tiers, faculty approval for reach, graph anomaly detection, rate limits
+Minors' safety Parental consent, private-by-default, DM restrictions, no sponsor targeting, fast moderation SLAs
+AI errors and cost Human confirmation, confidence thresholds, model routing, quotas, non-AI fallbacks
+Third-party API policy
+changes (Meta)
+Adapter pattern per channel, email and web push as fallbacks, no single-channel dependency
+Leadership churn hurting
+adoption
+Legacy Vault turns churn into a reason to stay; succession prompts driven by HQ
+0:00 · Hook
+"Priya needs
+judges and a
+design partner.
+Today she has
+3 cold DMs
+and no reply."
+›
+0:30 · Launch
+Drop a poster;
+the event is live
+in 20 s. ›
+1:00 · Date
+Doctor
+It flags a clash
+with a nearby
+fest; she picks
+the suggested
+date.
+›
+1:20 ·
+Compass
+A 94% match
+with reasons;
+she sends a co-
+host request.
+›
+1:45 · Live
+accept
+Second phone
+(DTU) accepts,
+and the Collab
+Room appears
+in real time.
+›
+2:15 · Reach
+A student 6 km
+away sees it on
+Pulse and
+registers with
+Passport.
+›
+2:40 · Scale
+HQ registry,
+then the
+architecture
+slide and close.
+
+--- Page 29 ---
+29CampusConnect · Product & Architecture Blueprint
+2222
+S U M M A R Y
+Why CampusConnect wins
+How the blueprint maps to what hackathon judges typically score.
+CRITERION HOW WE DELIVER
+Problem understanding Four stated pains broken into root causes, plus six hidden problems (churn, clashes, asymmetry, trust,
+institutional blind spot, wrong channel)
+Innovation Complementarity matching, clash-aware scheduling, Resource Exchange with database-enforced
+bookings, leadership-handover RAG, verifiable cross-campus Passport
+Completeness Every PS 2 sentence mapped to a feature and a metric; web, mobile, institution and sponsor surfaces
+Technical depth Outbox + CDC, polyglot persistence, hybrid search, learning-to-rank, real-time messaging semantics
+Scalability Numbers-based capacity plan, staged evolution to cell-based architecture, Fest Rush engineering
+Reliability & security SLOs with error budgets, multi-AZ + DR region, OWASP ASVS L2, DPDP alignment, minors' protections
+Feasibility The Stage 0 build uses the production schema; a 5-day plan with a scripted, fail-safe demo
+Impact & viability A North Star tied to the PS, fairness for small colleges, a revenue model that never charges students
+T H E  O N E - L I N E  P I T C H
+CampusConnect helps student communities find the
+right partner, build something together and
+remember how they did it, across every campus in
+India.
+Discover · Connect · Promote · Collaborate · Sustain
+Glossary
+CDC: change data capture; streaming database changes from the write-
+ahead log.
+Outbox: a table written in the same transaction as business data, then
+published as events.
+RLS: row-level security; Postgres-enforced access rules per row.
+ISR: incremental static regeneration; cached pages refreshed in the
+background.
+LTR: learning-to-rank; ML models that learn ordering from outcomes.
+MMR: maximal marginal relevance; re-ranking for diversity.
+RPO / RTO: how much data, and how much time, a disaster may cost.
+DPDP: India's Digital Personal Data Protection Act, 2023.
+

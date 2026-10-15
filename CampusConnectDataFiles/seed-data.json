@@ -1,0 +1,350 @@
+{
+  "users": [
+    {
+      "email": "admin@campusconnect.app",
+      "role": "ADMIN",
+      "displayName": "CampusConnect Admin",
+      "passwordGroup": "admin",
+      "profile": {
+        "bio": "Platform administrator",
+        "college": "CampusConnect HQ",
+        "skills": ["Community moderation", "Platform operations"],
+        "interests": ["Student communities", "Campus events"],
+        "isPublic": true
+      }
+    },
+    {
+      "email": "priya@nsut.ac.in",
+      "role": "STUDENT",
+      "displayName": "Priya Sharma",
+      "passwordGroup": "student",
+      "profile": {
+        "bio": "CSE student interested in open source and machine learning.",
+        "college": "NSUT Delhi",
+        "course": "B.Tech CSE",
+        "academicYear": "4th Year",
+        "skills": ["Python", "React", "Machine Learning", "Node.js"],
+        "interests": ["AI/ML", "Open Source", "Web Development"],
+        "githubUrl": "https://example.com/priya-github",
+        "linkedinUrl": "https://example.com/priya-linkedin",
+        "isPublic": true
+      }
+    },
+    {
+      "email": "aarav@dtu.ac.in",
+      "role": "STUDENT",
+      "displayName": "Aarav Mehta",
+      "passwordGroup": "student",
+      "profile": {
+        "bio": "Design and frontend focused, building at the intersection of technology and art.",
+        "college": "DTU Delhi",
+        "course": "B.Tech IT",
+        "academicYear": "3rd Year",
+        "skills": ["Figma", "React", "TypeScript", "UI/UX"],
+        "interests": ["Design", "Frontend", "Product"],
+        "linkedinUrl": "https://example.com/aarav-linkedin",
+        "isPublic": true
+      }
+    },
+    {
+      "email": "neha@iiitd.ac.in",
+      "role": "STUDENT",
+      "displayName": "Neha Kapoor",
+      "passwordGroup": "student",
+      "profile": {
+        "bio": "Robotics enthusiast who enjoys building useful hardware and software.",
+        "college": "IIIT-Delhi",
+        "course": "B.Tech ECE",
+        "academicYear": "3rd Year",
+        "skills": ["C++", "ROS", "IoT", "Embedded Systems"],
+        "interests": ["Robotics", "IoT", "Hardware"],
+        "githubUrl": "https://example.com/neha-github",
+        "isPublic": true
+      }
+    }
+  ],
+  "admins": [
+    {
+      "email": "admin@campusconnect.app",
+      "permissions": ["users:manage", "communities:manage", "reports:manage"]
+    }
+  ],
+  "communities": [
+    {
+      "slug": "nsut-coding-club",
+      "name": "NSUT Coding Club",
+      "description": "A welcoming developer community for coding practice, hackathons, and open-source projects.",
+      "category": "Technology",
+      "objectives": "Help students learn by building together and sharing practical engineering skills.",
+      "rules": "Be respectful, give constructive feedback, and do not spam.",
+      "visibility": "PUBLIC",
+      "ownerEmail": "priya@nsut.ac.in",
+      "tags": ["Software", "Open Source", "AI"]
+    },
+    {
+      "slug": "dtu-design-society",
+      "name": "DTU Design Society",
+      "description": "A creative hub for designers, artists, and students interested in thoughtful user experiences.",
+      "category": "Design",
+      "objectives": "Promote design thinking and help members create strong project portfolios.",
+      "rules": "Credit collaborators and keep critique kind and actionable.",
+      "visibility": "PUBLIC",
+      "ownerEmail": "aarav@dtu.ac.in",
+      "tags": ["Design", "UI/UX", "Creative"]
+    },
+    {
+      "slug": "iiitd-robotics-club",
+      "name": "IIIT-D Robotics Club",
+      "description": "Students collaborate on robotics, embedded systems, autonomous vehicles, and hands-on hardware.",
+      "category": "Technology",
+      "objectives": "Learn robotics through practical experiments, team projects, and competitions.",
+      "rules": "Follow lab safety guidance and return shared equipment after use.",
+      "visibility": "PUBLIC",
+      "ownerEmail": "neha@iiitd.ac.in",
+      "tags": ["Robotics", "Hardware", "IoT"]
+    }
+  ],
+  "memberships": [
+    { "userEmail": "priya@nsut.ac.in", "communitySlug": "nsut-coding-club", "role": "OWNER", "status": "ACTIVE" },
+    { "userEmail": "aarav@dtu.ac.in", "communitySlug": "nsut-coding-club", "role": "MEMBER", "status": "ACTIVE" },
+    { "userEmail": "aarav@dtu.ac.in", "communitySlug": "dtu-design-society", "role": "OWNER", "status": "ACTIVE" },
+    { "userEmail": "priya@nsut.ac.in", "communitySlug": "dtu-design-society", "role": "MEMBER", "status": "ACTIVE" },
+    { "userEmail": "neha@iiitd.ac.in", "communitySlug": "iiitd-robotics-club", "role": "OWNER", "status": "ACTIVE" },
+    { "userEmail": "priya@nsut.ac.in", "communitySlug": "iiitd-robotics-club", "role": "MEMBER", "status": "ACTIVE" }
+  ],
+  "events": [
+    {
+      "id": "seed-event-hacknsut-2026",
+      "title": "HackNSUT 2026 — Build for a Better Campus",
+      "description": "A two-day student hackathon focused on useful ideas for campus life, sustainability, and accessibility.",
+      "communitySlug": "nsut-coding-club",
+      "creatorEmail": "priya@nsut.ac.in",
+      "venue": "NSUT Main Auditorium, Dwarka",
+      "startAt": "2026-11-14T09:00:00.000Z",
+      "endAt": "2026-11-15T17:00:00.000Z",
+      "maxCapacity": 240,
+      "status": "PUBLISHED",
+      "tags": ["Hackathon", "AI", "Sustainability"]
+    },
+    {
+      "id": "seed-event-design-sprint-2026",
+      "title": "UI/UX Design Sprint — From Idea to Prototype",
+      "description": "A practical workshop to learn research, wireframing, and prototyping with peer feedback. Beginners welcome.",
+      "communitySlug": "dtu-design-society",
+      "creatorEmail": "aarav@dtu.ac.in",
+      "venue": "DTU Design Lab, Block 5",
+      "startAt": "2026-11-07T10:00:00.000Z",
+      "endAt": "2026-11-07T13:00:00.000Z",
+      "maxCapacity": 60,
+      "status": "PUBLISHED",
+      "tags": ["Design", "UI/UX", "Workshop"]
+    },
+    {
+      "id": "seed-event-robotics-open-lab-2026",
+      "title": "Robotics Open Lab — Build and Test",
+      "description": "Meet the robotics team, see current prototypes, and try a guided introduction to sensors and embedded systems.",
+      "communitySlug": "iiitd-robotics-club",
+      "creatorEmail": "neha@iiitd.ac.in",
+      "venue": "IIIT-Delhi Robotics Lab",
+      "startAt": "2026-11-21T11:00:00.000Z",
+      "endAt": "2026-11-21T15:00:00.000Z",
+      "maxCapacity": 35,
+      "status": "PUBLISHED",
+      "tags": ["Robotics", "Hardware", "Workshop"]
+    }
+  ],
+  "eventRegistrations": [
+    { "eventId": "seed-event-hacknsut-2026", "userEmail": "aarav@dtu.ac.in" },
+    { "eventId": "seed-event-hacknsut-2026", "userEmail": "neha@iiitd.ac.in" },
+    { "eventId": "seed-event-design-sprint-2026", "userEmail": "priya@nsut.ac.in" }
+  ],
+  "projects": [
+    {
+      "id": "seed-project-campus-map",
+      "title": "Open Campus Map",
+      "description": "An open map that helps students find accessible routes, buildings, clubs, labs, and useful campus services.",
+      "objectives": "Create and maintain a helpful campus navigation resource with contributions from students.",
+      "techStack": ["React", "TypeScript", "MapLibre", "PostgreSQL"],
+      "category": "Open Source",
+      "status": "ACTIVE",
+      "ownerEmail": "priya@nsut.ac.in",
+      "communitySlug": "nsut-coding-club",
+      "repoUrl": "https://github.com/example/open-campus-map",
+      "requiredSkills": ["React", "Maps", "Accessibility"],
+      "maxTeamSize": 8,
+      "tags": ["Open Source", "Maps", "Accessibility"]
+    },
+    {
+      "id": "seed-project-study-buddy",
+      "title": "StudyBuddy",
+      "description": "A peer-learning directory for students looking for study partners, project teammates, and shared study sessions.",
+      "objectives": "Make it easier for students across departments to learn together.",
+      "techStack": ["Next.js", "Prisma", "PostgreSQL", "CSS"],
+      "category": "Education",
+      "status": "IDEA",
+      "ownerEmail": "aarav@dtu.ac.in",
+      "repoUrl": "https://github.com/example/study-buddy",
+      "requiredSkills": ["Next.js", "Backend", "Product Design"],
+      "maxTeamSize": 5,
+      "tags": ["Education", "Product", "Web Development"]
+    },
+    {
+      "id": "seed-project-smart-garden",
+      "title": "Smart Campus Garden",
+      "description": "A low-cost sensor kit and dashboard to help student volunteers monitor soil moisture and garden conditions.",
+      "objectives": "Explore practical IoT tools that support greener campus spaces.",
+      "techStack": ["C++", "ESP32", "IoT", "React"],
+      "category": "Sustainability",
+      "status": "ACTIVE",
+      "ownerEmail": "neha@iiitd.ac.in",
+      "communitySlug": "iiitd-robotics-club",
+      "requiredSkills": ["Embedded Systems", "Sensors", "Frontend"],
+      "maxTeamSize": 6,
+      "tags": ["IoT", "Sustainability", "Hardware"]
+    }
+  ],
+  "projectMemberships": [
+    { "projectId": "seed-project-campus-map", "userEmail": "priya@nsut.ac.in", "role": "OWNER" },
+    { "projectId": "seed-project-campus-map", "userEmail": "aarav@dtu.ac.in", "role": "MEMBER" },
+    { "projectId": "seed-project-study-buddy", "userEmail": "aarav@dtu.ac.in", "role": "OWNER" },
+    { "projectId": "seed-project-smart-garden", "userEmail": "neha@iiitd.ac.in", "role": "OWNER" },
+    { "projectId": "seed-project-smart-garden", "userEmail": "priya@nsut.ac.in", "role": "MEMBER" }
+  ],
+  "collaborationRequests": [
+    {
+      "id": "seed-collaboration-campus-map-aarav",
+      "projectId": "seed-project-campus-map",
+      "senderEmail": "aarav@dtu.ac.in",
+      "requesterEmail": "priya@nsut.ac.in",
+      "message": "I can help with the map interface and accessible route views.",
+      "status": "ACCEPTED"
+    },
+    {
+      "id": "seed-collaboration-smart-garden-priya",
+      "projectId": "seed-project-smart-garden",
+      "senderEmail": "priya@nsut.ac.in",
+      "requesterEmail": "neha@iiitd.ac.in",
+      "message": "I would like to help build the project dashboard.",
+      "status": "PENDING"
+    }
+  ],
+  "discussions": [
+    {
+      "id": "seed-discussion-hackathon-tips",
+      "title": "What makes a good first hackathon project?",
+      "body": "I am joining my first hackathon this term. How do you choose a project scope that can be finished and presented well?",
+      "communitySlug": "nsut-coding-club",
+      "authorEmail": "aarav@dtu.ac.in"
+    },
+    {
+      "id": "seed-discussion-design-critique",
+      "title": "Share your portfolio for friendly feedback",
+      "body": "Let us share one piece of work and one area where we would appreciate constructive feedback.",
+      "communitySlug": "dtu-design-society",
+      "authorEmail": "aarav@dtu.ac.in"
+    },
+    {
+      "id": "seed-discussion-robotics-sensors",
+      "title": "Which sensors are useful for a line-following robot?",
+      "body": "I am comparing reflectance sensor arrays for a beginner robotics build. What setups have worked reliably in your projects?",
+      "communitySlug": "iiitd-robotics-club",
+      "authorEmail": "neha@iiitd.ac.in"
+    }
+  ],
+  "comments": [
+    {
+      "id": "seed-comment-hackathon-scope",
+      "discussionId": "seed-discussion-hackathon-tips",
+      "authorEmail": "priya@nsut.ac.in",
+      "body": "Start with one core user problem and a small working demo. A clear explanation is better than several unfinished features."
+    },
+    {
+      "id": "seed-comment-design-portfolio",
+      "discussionId": "seed-discussion-design-critique",
+      "authorEmail": "priya@nsut.ac.in",
+      "body": "Including a short note about your design decisions makes it much easier for reviewers to give specific feedback."
+    },
+    {
+      "id": "seed-comment-robotics-sensors",
+      "discussionId": "seed-discussion-robotics-sensors",
+      "authorEmail": "aarav@dtu.ac.in",
+      "body": "A calibrated reflectance array is a good start, and testing it under different lighting helps avoid surprises."
+    }
+  ],
+  "notifications": [
+    {
+      "id": "seed-notification-welcome-priya",
+      "userEmail": "priya@nsut.ac.in",
+      "type": "COMMUNITY_ANNOUNCEMENT",
+      "title": "Welcome to CampusConnect",
+      "message": "Explore your communities, find upcoming events, and share projects with other students."
+    },
+    {
+      "id": "seed-notification-event-aarav",
+      "userEmail": "aarav@dtu.ac.in",
+      "type": "EVENT_REGISTERED",
+      "title": "Event registration confirmed",
+      "message": "You are registered for HackNSUT 2026."
+    },
+    {
+      "id": "seed-notification-project-neha",
+      "userEmail": "neha@iiitd.ac.in",
+      "type": "COLLABORATION_REQUEST",
+      "title": "New project collaboration request",
+      "message": "A student would like to collaborate on Smart Campus Garden."
+    }
+  ],
+  "resources": [
+    {
+      "id": "seed-resource-design-lab",
+      "title": "Design Lab",
+      "description": "A shared workspace for design workshops and team prototyping.",
+      "type": "ROOM",
+      "location": "DTU, Block 5",
+      "capacity": 24,
+      "ownerEmail": "aarav@dtu.ac.in",
+      "communitySlug": "dtu-design-society"
+    },
+    {
+      "id": "seed-resource-robotics-kit",
+      "title": "Robotics Starter Kit",
+      "description": "A shared microcontroller, motor, and sensor kit for introductory robotics builds.",
+      "type": "EQUIPMENT",
+      "location": "IIIT-Delhi Robotics Lab",
+      "capacity": 4,
+      "ownerEmail": "neha@iiitd.ac.in",
+      "communitySlug": "iiitd-robotics-club"
+    },
+    {
+      "id": "seed-resource-open-source-guides",
+      "title": "Open Source Learning Guides",
+      "description": "A collection of beginner-friendly references for Git, code review, and project documentation.",
+      "type": "SOFTWARE",
+      "url": "https://opensource.guide/",
+      "ownerEmail": "priya@nsut.ac.in",
+      "communitySlug": "nsut-coding-club"
+    }
+  ],
+  "reports": [
+    {
+      "id": "seed-report-demo-review",
+      "reporterEmail": "aarav@dtu.ac.in",
+      "reportedUserEmail": "neha@iiitd.ac.in",
+      "contentType": "discussion",
+      "contentId": "seed-discussion-robotics-sensors",
+      "reason": "OTHER",
+      "details": "Sample resolved report for the moderation dashboard.",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "seed-report-demo-pending",
+      "reporterEmail": "priya@nsut.ac.in",
+      "reportedUserEmail": "aarav@dtu.ac.in",
+      "contentType": "project",
+      "contentId": "seed-project-study-buddy",
+      "reason": "OTHER",
+      "details": "Sample pending report for demonstrating moderation workflows.",
+      "status": "PENDING"
+    }
+  ]
+}
