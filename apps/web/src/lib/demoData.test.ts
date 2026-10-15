@@ -23,6 +23,20 @@ describe('public demo fixtures', () => {
     expect(result.total).toBe(1);
   });
 
+  it('filters projects by technology and sorts results by title', () => {
+    const technologyResult = getDemoResponse('/projects?technology=React') as {
+      projects: { title: string }[];
+      total: number;
+    };
+    const sortedResult = getDemoResponse('/projects?sort=title') as { projects: { title: string }[] };
+
+    expect(technologyResult.projects.map((project) => project.title)).toEqual(['Campus Access Map']);
+    expect(technologyResult.total).toBe(1);
+    expect(sortedResult.projects.map((project) => project.title)).toEqual([
+      'A Welcome Zine for New Students', 'Campus Access Map', 'Garden Sensor Kit', 'The Pantry Exchange Board',
+    ]);
+  });
+
   it('keeps detail pages connected to related sample records', () => {
     const community = getDemoResponse('/communities/northbridge-builders') as {
       community: { id: string; events: { id: string }[] };

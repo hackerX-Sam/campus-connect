@@ -6,12 +6,13 @@ import { NotFoundError, ForbiddenError, ConflictError, ValidationError } from '.
 
 export async function listProjects(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { q, category, status } = req.query as Record<string, string>;
+    const { q, category, status, technology, sort } = req.query as Record<string, string>;
     const { page, limit, skip } = getPagination(req.query.page, req.query.limit);
 
     const where = {
       ...(q && { title: { contains: q, mode: 'insensitive' as const } }),
       ...(category && { category }),
+      ...(technology && { techStack: { has: technology } }),
       status: status
         ? (status as 'IDEA' | 'ACTIVE' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED')
         : { not: 'CANCELLED' as const },
@@ -26,7 +27,11 @@ export async function listProjects(req: Request, res: Response, next: NextFuncti
           owner: { select: { id: true, profile: { select: { displayName: true, avatarUrl: true } } } },
           _count: { select: { memberships: true } },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: sort === 'title'
+          ? { title: 'asc' }
+          : sort === 'status'
+            ? [{ status: 'asc' }, { title: 'asc' }]
+            : { createdAt: 'desc' },
         skip,
         take: limit,
       }),

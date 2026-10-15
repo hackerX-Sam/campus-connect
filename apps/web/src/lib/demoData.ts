@@ -148,7 +148,7 @@ const projects: DemoProject[] = [
     id: 'demo-project-access-map', title: 'Campus Access Map',
     description: 'A student-maintained map of step-free routes, quiet study spots, and the small details that make getting around campus easier.',
     objectives: 'Start with one clear route between the library and student services, then invite students to review the information.',
-    status: 'ACTIVE', category: 'Open source', techStack: ['React', 'MapLibre', 'TypeScript'], requiredSkills: ['Accessibility', 'Mapping'],
+    status: 'ACTIVE', category: 'Open Source', techStack: ['React', 'MapLibre', 'TypeScript'], requiredSkills: ['Accessibility', 'Mapping'],
     owner: { id: 'demo-person-mira', profile: { displayName: personName('demo-person-mira'), avatarUrl: null } },
     community: communityRef('demo-community-builders'), memberships: [{ user: { id: 'demo-person-rohan', profile: { displayName: personName('demo-person-rohan') } } }],
     repoUrl: null, demoUrl: null,
@@ -317,12 +317,18 @@ export function getDemoResponse(path: string): unknown | undefined {
     const query = (url.searchParams.get('q') ?? '').toLocaleLowerCase();
     const category = url.searchParams.get('category');
     const status = url.searchParams.get('status');
+    const technology = url.searchParams.get('technology');
     const filtered = projects.filter((project) =>
       project.title.toLocaleLowerCase().includes(query) &&
       (!category || project.category === category) &&
+      (!technology || project.techStack.includes(technology)) &&
       (status ? project.status === status : project.status !== 'CANCELLED'),
     );
-    const result = paginated(filtered, url, 'projects');
+    const sort = url.searchParams.get('sort');
+    const sorted = [...filtered];
+    if (sort === 'title') sorted.sort((left, right) => left.title.localeCompare(right.title));
+    if (sort === 'status') sorted.sort((left, right) => left.status.localeCompare(right.status) || left.title.localeCompare(right.title));
+    const result = paginated(sorted, url, 'projects');
     return { ...result };
   }
 
