@@ -1,4 +1,4 @@
-import { api } from './apiClient';
+import { api, resolveApiBase } from './apiClient';
 import { getDemoResponse } from './demoData';
 import { disableDemoMode, enableDemoMode, isDemoMode } from './demoMode';
 
@@ -107,5 +107,17 @@ describe('public demo fixtures', () => {
 
     await expect(api.get('/notifications?limit=50')).rejects.toThrow('Failed to fetch');
     expect(isDemoMode()).toBe(false);
+  });
+});
+
+describe('API deployment URL', () => {
+  it('uses localhost for local development but never for production', () => {
+    expect(resolveApiBase(undefined, 'development')).toBe('http://localhost:3001/api');
+    expect(resolveApiBase(undefined, 'production')).toBe('');
+    expect(resolveApiBase('http://localhost:3001/api', 'production')).toBe('');
+  });
+
+  it('preserves an explicitly configured hosted API URL', () => {
+    expect(resolveApiBase('https://api.campusconnect.example/api/', 'production')).toBe('https://api.campusconnect.example/api');
   });
 });

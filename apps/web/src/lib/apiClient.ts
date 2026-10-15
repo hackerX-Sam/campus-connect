@@ -14,10 +14,25 @@ export class ApiError extends Error {
   }
 }
 
-const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api').replace(/\/$/, '');
+const localApiBase = 'http://localhost:3001/api';
+const localhostApiPattern = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?(\/|$)/i;
+
+export function resolveApiBase(
+  configuredUrl = process.env.NEXT_PUBLIC_API_URL,
+  environment = process.env.NODE_ENV,
+): string {
+  const configured = configuredUrl?.trim().replace(/\/+$/, '');
+  if (environment === 'production') {
+    return configured && !localhostApiPattern.test(configured) ? configured : '';
+  }
+  return configured || localApiBase;
+}
+
+const apiBase = resolveApiBase();
 let refreshing: Promise<boolean> | null = null;
 
 async function refreshSession(): Promise<boolean> {
+  if (!apiBase) return false;
   if (!refreshing) {
     refreshing = fetch(`${apiBase}/auth/refresh`, {
       method: 'POST',
@@ -37,7 +52,7 @@ export async function apiRequest<T>(
   canRefresh = true,
 ): Promise<T> {
   const method = (options.method ?? 'GET').toUpperCase();
-  const pathname = new URL(path, apiBase).pathname.replace(/^\/api/, '');
+  const pathname = new URL(path, apiBase || 'http://campusconnect.local/api').pathname.replace(/^\/api/, '');
   const isAuthFlow = ['/auth/login', '/auth/register', '/auth/logout'].includes(pathname);
   if (isDemoMode() && method !== 'GET' && !isAuthFlow) {
     throw new ApiError('Demo mode is read-only. Sign in or exit demo mode to make changes.', 403);
@@ -45,6 +60,14 @@ export async function apiRequest<T>(
   if (isDemoMode() && method === 'GET') {
     const demoResponse = getDemoResponse(path);
     if (demoResponse !== undefined) return demoResponse as T;
+  }
+  if (!apiBase) {
+    const demoResponse = method === 'GET' ? getDemoResponse(path) : undefined;
+    if (demoResponse !== undefined) {
+      enableDemoMode('offline');
+      return demoResponse as T;
+    }
+    throw new ApiError('The CampusConnect API is not configured for this deployment. Set NEXT_PUBLIC_API_URL to your deployed API base URL.', 503);
   }
 
   const headers = new Headers(options.headers);

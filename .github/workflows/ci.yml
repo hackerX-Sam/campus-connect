@@ -27,7 +27,3 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:3001/api
-      - name: Build API container
-        run: docker build -f Dockerfile.api -t campusconnect-api:ci .
-      - name: Build web container
-        run: docker build -f Dockerfile.web --build-arg NEXT_PUBLIC_API_URL=http://localhost:3001/api -t campusconnect-web:ci .

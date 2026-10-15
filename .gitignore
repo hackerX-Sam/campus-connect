@@ -5,6 +5,7 @@ build/
 *.log
 .env
 .env.local
+.vercel/
 .DS_Store
 uploads/
 coverage/

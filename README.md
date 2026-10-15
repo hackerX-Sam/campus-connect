@@ -47,6 +47,16 @@ Compose starts PostgreSQL, applies checked-in Prisma migrations before starting 
 
 For production, use managed PostgreSQL, unique secrets from a secret manager, TLS termination, backups, and an explicit `CORS_ORIGINS` allowlist. Never commit `.env`.
 
+## Vercel frontend deployment
+
+Import this repository into Vercel and set the project **Root Directory** to `apps/web`. The workspace's `vercel.json` installs from the monorepo root and builds the shared types before building Next.js. Public pages can run in read-only sample mode without a backend. To enable sign-in and persistent actions, set `NEXT_PUBLIC_API_URL` to the separately hosted API URL ending in `/api`, then configure that API's `CORS_ORIGINS` to allow the Vercel production and preview domains. Do not use `localhost` for a deployed API URL.
+
+GitHub Actions validates the shared types, API, web app, tests, and production build without requiring Docker. Docker Compose and Dockerfiles remain available for local or self-hosted full-stack deployments.
+
+## Vercel web deployment
+
+Deploy the Next.js workspace from `apps/web` using Vercel's monorepo support. Set `NEXT_PUBLIC_API_URL` to the public base URL of the separately deployed Express API, ending in `/api`, and allow the Vercel production and preview origins in the API's `CORS_ORIGINS`. Do not set this value to `localhost` in Vercel. If it is omitted, public pages use the local sample dataset and authentication or protected API actions report that the API is not configured.
+
 ## Scripts
 
 | Command | Purpose |
