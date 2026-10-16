@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, LogOut, Menu, Moon, Sun, X } from 'lucide-react';
+import { Bell, LogOut, Menu, Moon, Sun, UsersRound, X } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -15,6 +15,7 @@ const links = [
   ['Communities', '/communities'],
   ['Events', '/events'],
   ['Projects', '/projects'],
+  ['Connect', '/connect'],
 ];
 
 export function Navbar() {
@@ -67,7 +68,12 @@ export function Navbar() {
         {open ? <X size={22} /> : <Menu size={22} />}
       </button>
       <div className={`nav-links ${open ? 'nav-open' : ''}`}>
-        {links.map(([label, href]) => <Link key={href} href={href} aria-current={pathname === href ? 'page' : undefined} onClick={closeMenu}>{label}</Link>)}
+        {links.map(([label, href]) => (
+          <Link key={href} href={href} aria-current={pathname === href ? 'page' : undefined} onClick={closeMenu}>
+            {label === 'Connect' && <UsersRound size={15} />}
+            {label}
+          </Link>
+        ))}
         {user && <Link href="/dashboard" aria-current={pathname === '/dashboard' ? 'page' : undefined} onClick={closeMenu}>Dashboard</Link>}
         <Link href="/communities" onClick={(event: MouseEvent<HTMLAnchorElement>) => { event.preventDefault(); enableDemoMode('manual'); window.location.assign('/communities'); closeMenu(); }}>Explore demo</Link>
         {user && <Link className="notification-link" href="/notifications" aria-current={pathname === '/notifications' ? 'page' : undefined} aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`} onClick={closeMenu}><Bell size={17} /> Notifications {unread > 0 && <span className="notification-count">{unread > 9 ? '9+' : unread}</span>}</Link>}

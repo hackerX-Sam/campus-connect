@@ -5,6 +5,7 @@ import { ArrowRight, CalendarDays, Code2, Compass, Users } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { Badge, Card, LoadingSpinner } from '@/components/ui';
+import { AccessMapDemoSection } from '@/components/AccessMapDemo';
 import { api } from '@/lib/apiClient';
 import { enterDemoMode } from '@/lib/demoMode';
 import type { Community, Event, Project } from '@campusconnect/types';
@@ -73,6 +74,7 @@ export default function HomePage() {
         href: `/projects/${item.id}`, title: item.title, description: item.description, badge: item.status, meta: 'Open collaboration',
       }))} empty="No projects have been shared yet." variant="projects" />
     </>}
+    <AccessMapDemoSection />
     <section className="collaboration-strip">
       <div className="page-width">
         <div className="collaboration-heading"><span className="eyebrow">A good place to begin</span><h2>From first idea to shared progress</h2></div>

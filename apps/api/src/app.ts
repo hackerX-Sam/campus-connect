@@ -18,6 +18,7 @@ import { projectsRouter } from './routes/projects.routes';
 import { discussionsRouter } from './routes/discussions.routes';
 import { notificationsRouter } from './routes/notifications.routes';
 import { adminRouter } from './routes/admin.routes';
+import { connectRouter } from './routes/connect.routes';
 
 const app = express();
 const allowedOrigins = (process.env.CORS_ORIGINS ?? process.env.NEXTAUTH_URL ?? 'http://localhost:3000')
@@ -75,6 +76,7 @@ app.use('/api/events', eventsRouter);
 app.use('/api/projects', projectsRouter);
 app.use('/api/discussions', discussionsRouter);
 app.use('/api/notifications', notificationsRouter);
+app.use('/api/connect', connectRouter);
 app.use('/api/admin', adminRouter);
 
 // ─── Error handling ──────────────────────────────────────────────────────────

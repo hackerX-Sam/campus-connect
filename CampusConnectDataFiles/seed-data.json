@@ -210,6 +210,12 @@
     { "projectId": "seed-project-smart-garden", "userEmail": "neha@iiitd.ac.in", "role": "OWNER" },
     { "projectId": "seed-project-smart-garden", "userEmail": "priya@nsut.ac.in", "role": "MEMBER" }
   ],
+  "connections": [
+    { "senderEmail": "aarav@dtu.ac.in", "receiverEmail": "priya@nsut.ac.in", "status": "ACCEPTED" },
+    { "senderEmail": "neha@iiitd.ac.in", "receiverEmail": "priya@nsut.ac.in", "status": "ACCEPTED" },
+    { "senderEmail": "priya@nsut.ac.in", "receiverEmail": "neha@iiitd.ac.in", "status": "PENDING" },
+    { "senderEmail": "aarav@dtu.ac.in", "receiverEmail": "neha@iiitd.ac.in", "status": "PENDING" }
+  ],
   "collaborationRequests": [
     {
       "id": "seed-collaboration-campus-map-aarav",

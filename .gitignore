@@ -10,3 +10,5 @@ build/
 uploads/
 coverage/
 *.tsbuildinfo
+
+*.zip

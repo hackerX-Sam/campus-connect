@@ -1,11 +1,11 @@
 # CampusConnect
 
-CampusConnect is a TypeScript monorepo for student communities, events, projects, and discussions. The repository contains a Next.js App Router client, an Express/Prisma API, shared Zod validation/types, and a PostgreSQL Docker Compose setup.
+CampusConnect is a TypeScript monorepo for student communities, events, projects, and discussions. The repository contains a Next.js App Router client, an Express/Prisma API, shared Zod validation/types, and a PostgreSQL setup.
 
 ## Requirements
 
 - Node.js 20 or newer and npm 10+
-- PostgreSQL 15+ for local development, or Docker Desktop for the containerized stack
+- PostgreSQL 15+ for local development
 
 ## Local setup
 
@@ -17,7 +17,7 @@ CampusConnect is a TypeScript monorepo for student communities, events, projects
    npm run build --workspace=packages/types
    ```
 
-3. Start PostgreSQL locally (or start only the database with `docker compose up -d postgres`).
+3. Start PostgreSQL locally.
 4. Generate the Prisma client and apply the development migration:
 
    ```powershell
@@ -35,15 +35,7 @@ CampusConnect is a TypeScript monorepo for student communities, events, projects
 
 The web app is at <http://localhost:3000>, the API at <http://localhost:3001>, the health check at <http://localhost:3001/health>, and Swagger UI at <http://localhost:3001/docs>.
 
-## Docker deployment
-
-Copy `.env.example` to `.env`, set strong secrets and database credentials, then run:
-
-```powershell
-docker compose up --build
-```
-
-Compose starts PostgreSQL, applies checked-in Prisma migrations before starting the API, waits for API health, and then starts the web server. The app is available at <http://localhost:3000>. Persistent PostgreSQL and Redis volumes are retained when containers stop. Use `docker compose down` to stop the stack; `docker compose down -v` also deletes persisted data.
+## Production notes
 
 For production, use managed PostgreSQL, unique secrets from a secret manager, TLS termination, backups, and an explicit `CORS_ORIGINS` allowlist. Never commit `.env`.
 
@@ -51,7 +43,7 @@ For production, use managed PostgreSQL, unique secrets from a secret manager, TL
 
 Import this repository into Vercel and set the project **Root Directory** to `apps/web`. The workspace's `vercel.json` installs from the monorepo root and builds the shared types before building Next.js. Public pages can run in read-only sample mode without a backend. To enable sign-in and persistent actions, set `NEXT_PUBLIC_API_URL` to the separately hosted API URL ending in `/api`, then configure that API's `CORS_ORIGINS` to allow the Vercel production and preview domains. Do not use `localhost` for a deployed API URL.
 
-GitHub Actions validates the shared types, API, web app, tests, and production build without requiring Docker. Docker Compose and Dockerfiles remain available for local or self-hosted full-stack deployments.
+GitHub Actions validates the shared types, API, web app, tests, and production build.
 
 ## Vercel web deployment
 
@@ -71,7 +63,6 @@ Deploy the Next.js workspace from `apps/web` using Vercel's monorepo support. Se
 | `npm run db:migrate:dev` | Create/apply a local development migration |
 | `npm run db:migrate` | Apply checked-in migrations in deployment |
 | `npm run db:seed` | Add local demo data |
-| `npm run docker:build` | Build both Docker images |
 
 The end-to-end flow tests create a unique account and sample community, event, and project. Run them only against a disposable test database.
 

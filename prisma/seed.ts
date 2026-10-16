@@ -25,6 +25,7 @@ type NotificationType =
   | 'GENERAL';
 type ResourceType = 'ROOM' | 'EQUIPMENT' | 'SOFTWARE' | 'OTHER';
 type ReportStatus = 'PENDING' | 'REVIEWED' | 'RESOLVED' | 'DISMISSED';
+type ConnectionStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'CANCELLED';
 
 interface SeedUser {
   email: string;
@@ -143,6 +144,11 @@ interface SeedData {
     details: string;
     status: ReportStatus;
   }>;
+  connections: Array<{
+    senderEmail: string;
+    receiverEmail: string;
+    status: ConnectionStatus;
+  }>;
 }
 
 const prisma = new PrismaClient();
@@ -222,6 +228,16 @@ async function main(): Promise<void> {
   if (isProduction) {
     console.log('Production admin account seeded; demo data is disabled.');
     return;
+  }
+
+  for (const record of seedData.connections ?? []) {
+    const sender = required(users, record.senderEmail, 'user');
+    const receiver = required(users, record.receiverEmail, 'user');
+    await prisma.connection.upsert({
+      where: { senderId_receiverId: { senderId: sender.id, receiverId: receiver.id } },
+      update: { status: record.status },
+      create: { senderId: sender.id, receiverId: receiver.id, status: record.status },
+    });
   }
 
   const communities = new Map<string, { id: string }>();

@@ -77,6 +77,9 @@ enum NotificationType {
   COLLABORATION_ACCEPTED
   COLLABORATION_REJECTED
   COMMUNITY_ANNOUNCEMENT
+  CONNECTION_REQUEST
+  CONNECTION_ACCEPTED
+  CONNECTION_REMOVED
   GENERAL
 }
 
@@ -85,6 +88,13 @@ enum ReportStatus {
   REVIEWED
   RESOLVED
   DISMISSED
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
 }
 
 enum ResourceType {
@@ -125,6 +135,8 @@ model User {
   createdEvents        Event[]               @relation("EventCreator")
   admin                Admin?
   resources            Resource[]
+  connectionsSent      Connection[]          @relation("ConnectionSender")
+  connectionsReceived  Connection[]          @relation("ConnectionReceiver")
 
   @@index([email])
   @@map("users")
@@ -444,4 +456,22 @@ model Report {
   @@index([status])
   @@index([reporterId])
   @@map("reports")
+}
+
+model Connection {
+  id         String           @id @default(cuid())
+  senderId   String
+  receiverId String
+  status     ConnectionStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  sender   User @relation("ConnectionSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ConnectionReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([receiverId])
+  @@index([status])
+  @@index([updatedAt])
+  @@map("connections")
 }

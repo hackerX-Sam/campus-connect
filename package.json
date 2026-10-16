@@ -21,8 +21,7 @@
     "pretest": "npm run build --workspace=packages/types",
     "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
     "pretype-check": "npm run build --workspace=packages/types",
-    "type-check": "npm run build --workspace=apps/api && npm run type-check --workspace=apps/web",
-    "docker:build": "docker compose build"
+    "type-check": "npm run build --workspace=apps/api && npm run type-check --workspace=apps/web"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
